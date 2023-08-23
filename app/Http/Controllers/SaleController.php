@@ -7,59 +7,82 @@ use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $posts = Post::latest()->paginate(10);
+        return view('modules.sales.index', compact('posts'));
     }
 
     /**
      * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
-        //
+        return view('modules.sales.create');
     }
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PostRequest $request)
     {
-        //
+        Post::create($request->validated());
+        return redirect()->route('modules.sales.index')->with('message', 'Post Created Successfully');
     }
 
     /**
      * Display the specified resource.
+     *
+     * @param  \App\Models\Post  $post
+     * @return \Illuminate\Http\Response
      */
-    public function show(sale $sale)
+    public function show(Post $post)
     {
-        //
+        return view('modules.sales.show', compact('post'));
     }
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Post  $post
+     * @return \Illuminate\Http\Response
      */
-    public function edit(sale $sale)
+    public function edit(Post $post)
     {
-        //
+        return view('modules.sales.edit', compact('post'));
     }
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Post  $post
+     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, sale $sale)
+    public function update(PostRequest $request, Post $post)
     {
-        //
+        $post->update([
+            'title' => $request->title,
+            'description' => $request->description
+        ]);
+
+        return redirect()->route('modules.sales.index')->with('message', 'Post Updated Successfully');
     }
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Post  $post
+     * @return \Illuminate\Http\Response
      */
-    public function destroy(sale $sale)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return redirect()->route('modules.sales.index')->with('message', 'Post Deleted Successfully');
     }
 }

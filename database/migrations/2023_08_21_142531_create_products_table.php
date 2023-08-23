@@ -13,9 +13,15 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->comment("");
+            $table->string('name')->comment(""); 
             $table->string('description')->comment("");
+            $table->double("Suggestedprice")->comment("Precio sugerido al publico por unidad");
+            $table->double("suggested_price_box")->comment("Precio sugerido al publico por caja");
             $table->double('price')->comment("Precio del producto");
+            $table->double('stock')->comment("Cantidad de producto por unidad");
+            $table->double('stockbox')->comment("Cantidad de producto por caja");
+            $table->double('pricebox')->comment("precio por caja");
+            $table->date('expirationdate')->comment("Fecha de vencimiento");
             $table->string('short')->comment("Descripción corta");
             $table->string('data')->comment("Datos adicionales del producto");
             $table->string('reference')->comment("Referencia del producto");

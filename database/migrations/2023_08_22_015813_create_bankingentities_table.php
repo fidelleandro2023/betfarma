@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sales', function (Blueprint $table) {
+        Schema::create('bankingentities', function (Blueprint $table) {
             $table->id();
-            $table->double("totalprice")->comment("Precio total de la venta");
-            $table->double("discount")->comment("Descuento total de la venta");
-            
+            $table->string("name");
+            $table->string("description");
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sales');
+        Schema::dropIfExists('bankingentities');
     }
 };
