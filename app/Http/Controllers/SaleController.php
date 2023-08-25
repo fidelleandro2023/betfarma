@@ -9,8 +9,9 @@ class SaleController extends Controller
 {
     public function index()
     {
-        $posts = Post::latest()->paginate(10);
-        return view('modules.sales.index', compact('posts'));
+        //echo 'maiz'; exit;
+        //$posts = Post::latest()->paginate(10);
+        return view('modules.sales.index');
     }
 
     /**
