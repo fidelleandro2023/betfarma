@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string("numberacount")->comment("Número de cuenta");
             $table->string("balance")->comment("Saldo de cuenta");
             $table->string("cardnumber")->comment("Numero de tarjeta");
-            $table->integer('user_id')->unsigned()->nullable()->comment("Usuario que creó la cuenta bancaria");
+            $table->bigInteger('user_id')->unsigned()->nullable()->comment("Usuario que creó la cuenta bancaria");
             $table->foreign('user_id')
             ->references('id')
             ->on('users')

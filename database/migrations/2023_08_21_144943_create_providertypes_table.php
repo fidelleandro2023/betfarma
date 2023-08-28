@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->integer('user_id')->unsigned()->nullable()->comment("Usuario que creó el proveedor");
+            $table->bigInteger('user_id')->unsigned()->nullable()->comment("Usuario que creó el proveedor");
             $table->foreign('user_id')
             ->references('id')
             ->on('users')

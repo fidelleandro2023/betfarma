@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string("letter")->comment("Letra de anaquel");
             $table->string("number")->comment("Numero de anaquel");
-            $table->integer('user_id')->unsigned()->comment("Id de usuario");
-            $table->integer('shelf_id')->unsigned()->comment("Id de anaquel");
-            $table->integer('product_id')->unsigned()->comment("Id de producto");
+            $table->bigInteger('user_id')->unsigned()->comment("Id de usuario");
+            $table->bigInteger('shelf_id')->unsigned()->comment("Id de anaquel");
+            $table->bigInteger('product_id')->unsigned()->comment("Id de producto");
             $table->foreign('product_id')
             ->references('id')
             ->on('products')

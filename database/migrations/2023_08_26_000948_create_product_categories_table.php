@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('published')->comment("Fue publicada la revisión");
             $table->datetime('publishedAt')->comment("Fue publicada la revisión");
             $table->string('content')->comment("Contenido de revisión");
-            $table->integer('parent_id')->unsigned()->comment("Parent de revisión");
-            $table->integer('product_id')->unsigned()->comment("Id de producto");
-            $table->integer('category_id')->unsigned()->comment("Id de categoria");
-            $table->integer('user_id')->unsigned()->comment("Id de usuario");
+            $table->bigInteger('parent_id')->unsigned()->comment("Parent de revisión");
+            $table->bigInteger('product_id')->unsigned()->comment("Id de producto");
+            $table->bigInteger('category_id')->unsigned()->comment("Id de categoria");
+            $table->bigInteger('user_id')->unsigned()->comment("Id de usuario");
             $table->foreign('user_id')
             ->references('id')
             ->on('users')

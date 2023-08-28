@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('providerservices', function (Blueprint $table) {
             $table->id();
             $table->double('price')->comment("Precio del producto adquirido");
-            $table->integer('product_id')->unsigned()->comment("");
-            $table->integer('service_id')->unsigned()->comment("");
-            $table->integer('user_id')->unsigned()->nullable()->comment("Usuario que creó el proveedor");
+            $table->bigInteger('product_id')->unsigned()->comment("");
+            $table->bigInteger('service_id')->unsigned()->comment("");
+            $table->bigInteger('user_id')->unsigned()->nullable()->comment("Usuario que creó el proveedor");
             $table->foreign('user_id')
             ->references('id')
             ->on('users')

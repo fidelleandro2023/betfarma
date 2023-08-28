@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name')->comment(""); 
-            $table->chart('status',1)->default("A")->comment("A o I");
+            $table->char('status',1)->default("A")->comment("A o I");
             $table->string('description')->comment("");
             $table->double("Suggestedprice")->comment("Precio sugerido al publico por unidad");
             $table->double("suggested_price_box")->comment("Precio sugerido al publico por caja");
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('short')->comment("Descripción corta");
             $table->string('data')->comment("Datos adicionales del producto");
             $table->string('reference')->comment("Referencia del producto");
-            $table->integer('user_id')->unsigned()->nullable()->comment("Usuario que creó el producto");
+            $table->bigInteger('user_id')->unsigned()->nullable()->comment("Usuario que creó el producto");
             $table->foreign('user_id')
             ->references('id')
             ->on('users')

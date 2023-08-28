@@ -36,4 +36,27 @@ Route::get('/ventas', [App\Http\Controllers\SaleController::class, 'index'])->na
 Route::get('/clear-cache-all', function() {
     Artisan::call('cache:clear'); 
     dd("Cache Clear All");
-});
+});  
+
+ 
+
+/***********RUTAS DE categories ***************************/
+Route::get('/categories/index', [App\Http\Controllers$controller::class, 'index'])->name('categories_index');
+Route::get('/categories/create', [App\Http\Controllers$controller::class, 'create'])->name('categories_create');
+Route::post('/categories', [App\Http\Controllers$controller::class, 'store'])->name('categories_store');
+Route::get('/categories/category', [App\Http\Controllers$controller::class, 'show'])->name('categories_show');
+Route::get('/categories/category/edit', [App\Http\Controllers$controller::class, 'edit'])->name('categories_edit');
+Route::put('/categories/category', [App\Http\Controllers$controller::class, 'update'])->name('categories_update');
+Route::delete('/categories/category', [App\Http\Controllers$controller::class, 'destroy'])->name('categoriesdestroy');
+/***********FIN RUTAS DE categories ***********************/
+
+
+/***********RUTAS DE categories ***************************/
+Route::get('/categories/index', [App\Http\Controllers$controller::class, 'index'])->name('categories_index');
+Route::get('/categories/create', [App\Http\Controllers$controller::class, 'create'])->name('categories_create');
+Route::post('/categories', [App\Http\Controllers$controller::class, 'store'])->name('categories_store');
+Route::get('/categories/category', [App\Http\Controllers$controller::class, 'show'])->name('categories_show');
+Route::get('/categories/category/edit', [App\Http\Controllers$controller::class, 'edit'])->name('categories_edit');
+Route::put('/categories/category', [App\Http\Controllers$controller::class, 'update'])->name('categories_update');
+Route::delete('/categories/category', [App\Http\Controllers$controller::class, 'destroy'])->name('categoriesdestroy');
+/***********FIN RUTAS DE categories ***********************/

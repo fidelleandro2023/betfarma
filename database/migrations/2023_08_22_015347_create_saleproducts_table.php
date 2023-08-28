@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('product_id')->unsigned()->nullable()->comment("Producto adquirido");
             $table->integer('purchase_id')->unsigned()->nullable()->comment("Relación de venta");
-            $table->integer('user_id')->unsigned()->nullable()->comment("Usuario que creó la venta");
+            $table->bigInteger('user_id')->unsigned()->nullable()->comment("Usuario que creó la venta");
             $table->foreign('user_id')
             ->references('id')
             ->on('users');

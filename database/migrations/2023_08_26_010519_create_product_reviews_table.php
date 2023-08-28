@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('product_reviews', function (Blueprint $table) {
             $table->id();
             $table->string("title")->comment("");
-            $table->chart("rating",1)->comment("");
+            $table->char("rating",1)->comment("");
             $table->text("content")->comment("");
-            $table->chart("published",1)->comment("P(Publicado) o B (Borrador");
+            $table->char("published",1)->comment("P(Publicado) o B (Borrador");
             $table->datetime("published_at")->comment("");
             $table->bigInteger("parent_id");
-            $table->integer('user_id')->unsigned()->comment("Id de usuario");
-            $table->integer('product_id')->unsigned()->comment("Id de producto");
+            $table->bigInteger('user_id')->unsigned()->comment("Id de usuario");
+            $table->bigInteger('product_id')->unsigned()->comment("Id de producto");
             $table->foreign('product_id')
             ->references('id')
             ->on('products')

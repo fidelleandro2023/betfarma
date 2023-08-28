@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string("name")->comment("");
             $table->string("description")->comment("Descripción larga");
             $table->string("short")->comment("Descripción corta");
-            $table->integer("parent_id")->nullable()->comment("id recursivo");
+            $table->bigInteger("parent_id")->nullable()->comment("id recursivo");
             $table->string('reference')->comment("Referencia de la categoría");
-            $table->integer('user_id')->unsigned()->nullable()->comment("Usuario que creó la categoria");
+            $table->bigInteger('user_id')->unsigned()->nullable()->comment("Usuario que creó la categoria");
             $table->foreign('user_id')
             ->references('id')
             ->on('users')
