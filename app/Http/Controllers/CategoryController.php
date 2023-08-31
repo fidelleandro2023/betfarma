@@ -13,12 +13,15 @@
   }
   public function create()
   {
-    $category = category::latest()->paginate(10);
-    return view('modules.categories.index', compact('category'));
+     $category = new category();
+     $list_category = category::latest()->paginate(10);
+     $parent_id = $category->parent_id();
+     $user_id = $category->user_id();
+     return view('modules.categories.create', compact('list_category','parent_id','user_id'));
   }
   public function store(CategoryRequest $request)
   {
-    \DB::beginTransaction();
+     \DB::beginTransaction();
      try {
           category::create($request->validated());
           \DB::commit();
@@ -30,8 +33,8 @@
          \DB::rollBack();
          throw $e;
      }
-     category::create($request->validated());
-     return redirect()->route('modules.categories.index')->with('message', 'category Created Successfully');
+
+     return redirect()->route('categories.index')->with('message', 'category Created Successfully');
   }
   public function show(category $category)
   {
@@ -39,7 +42,9 @@
   }
   public function edit(category $category)
   {
-     return view('modules.categories.edit', compact('category'));
+     $parent_id = $category->parent_id();
+     $user_id = $category->user_id();
+     return view('modules.categories.edit', compact('category','parent_id','user_id'));
   }
   public function update(CategoryRequest $request,category $category)
   {
@@ -62,7 +67,7 @@
          \DB::rollBack();
          throw $e;
      }
-     return redirect()->route('modules.categories.index')->with('message', 'category Created Successfully');
+     return redirect()->route('categories.index')->with('message', 'category Created Successfully');
   }
   public function destroy(category $category)
   {
@@ -86,12 +91,12 @@
      $search = $request->input('search');
 
      $resultsSearch = category::where(function($query) use ($search) {
-                          $query->orWhere('name', 'LIKE', "%{$search}%")
-                          $query->orWhere('description', 'LIKE', "%{$search}%")
-                          $query->orWhere('short', 'LIKE', "%{$search}%")
-                          $query->orWhere('parent_id', 'LIKE', "%{$search}%")
-                          $query->orWhere('reference', 'LIKE', "%{$search}%")
-                          $query->orWhere('user_id', 'LIKE', "%{$search}%")
+                          $query->orWhere('name', 'LIKE', "%{$search}%");
+                          $query->orWhere('description', 'LIKE', "%{$search}%");
+                          $query->orWhere('short', 'LIKE', "%{$search}%");
+                          $query->orWhere('parent_id', 'LIKE', "%{$search}%");
+                          $query->orWhere('reference', 'LIKE', "%{$search}%");
+                          $query->orWhere('user_id', 'LIKE', "%{$search}%");
                        })
                        ->paginate(10);
      return view('modules.categories.index', compact('origin', 'search','resultsSearch'));
