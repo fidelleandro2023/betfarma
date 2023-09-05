@@ -12,7 +12,7 @@ class category extends Model
    protected $fillable = [
 'name','description','short','parent_id','reference','user_id'
 ];
-   public function parent_id()
+   public function list_parent_id()
    {      return category::get();
    }
    public function parent(): BelongsTo
@@ -35,7 +35,7 @@ class category extends Model
    {
      return $this->children()->with('childrenRecursive');
    }
-   public function user_id()
+   public function list_user_id()
    {
       return User::get();
    }

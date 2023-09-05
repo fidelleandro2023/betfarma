@@ -60,7 +60,7 @@
                 class="form-control block w-full mt-1 border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 placeholder:text-right focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                  name="parent_id" placeholder="180" value="{{old('parent_id')}}">
                           <option value="0">Superior</option>
-                  @foreach ($parent_id as $item)
+                  @foreach ($list_parent_id as $item)
                     <option value="{{ $item->id }}">
                         @if(isset($item->name))
                           {{ $item->name }}
@@ -105,7 +105,7 @@
                 class="form-control block w-full mt-1 border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 placeholder:text-right focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                  name="user_id" placeholder="180" value="{{old('user_id')}}">
                           <option value="">Seleccione user_id</option>
-                  @foreach ($user_id as $item)
+                  @foreach ($list_user_id as $item)
                     <option value="{{ $item->id }}">
                         @if(isset($item->name))
                           {{ $item->name }}
@@ -128,7 +128,7 @@
               @enderror
          </div>
                     <br>
-                    <button type="submit" class="btn btn-primary">Create category</button>
+                    <button type="submit" class="btn btn-primary">Crear category</button>
             </form>
         </div>
     </div>

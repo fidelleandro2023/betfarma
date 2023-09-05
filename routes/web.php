@@ -38,46 +38,6 @@ Route::get('/clear-cache-all', function() {
     dd("Cache Clear All");
 });  
  
-
-/***********RUTAS DE categories ***************************/
-Route::get('/categories/index', [App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
-Route::get('/categories/create', [App\Http\Controllers\CategoryController::class, 'create'])->name('categories.create');
-Route::post('/categories', [App\Http\Controllers\CategoryController::class, 'store'])->name('categories.store');
-Route::get('/categories/category', [App\Http\Controllers\CategoryController::class, 'show'])->name('categories.show');
-Route::get('/categories/category/edit', [App\Http\Controllers\CategoryController::class, 'edit'])->name('categories.edit');
-Route::put('/categories/category', [App\Http\Controllers\CategoryController::class, 'update'])->name('categories.update');
-Route::delete('/categories/category', [App\Http\Controllers\CategoryController::class, 'destroy'])->name('categories.destroy');
-/***********FIN RUTAS DE categories ***********************/
+  
  
-
-/***********RUTAS DE categories ***************************/
-Route::get('/categories/index', [App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
-Route::get('/categories/create', [App\Http\Controllers\CategoryController::class, 'create'])->name('categories.create');
-Route::post('/categories', [App\Http\Controllers\CategoryController::class, 'store'])->name('categories.store');
-Route::get('/categories/category', [App\Http\Controllers\CategoryController::class, 'show'])->name('categories.show');
-Route::get('/categories/category/edit', [App\Http\Controllers\CategoryController::class, 'edit'])->name('categories.edit');
-Route::put('/categories/category', [App\Http\Controllers\CategoryController::class, 'update'])->name('categories.update');
-Route::delete('/categories/category', [App\Http\Controllers\CategoryController::class, 'destroy'])->name('categories.destroy');
-/***********FIN RUTAS DE categories ***********************/
-
-
-/***********RUTAS DE categories ***************************/
-Route::get('/categories/index', [App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
-Route::get('/categories/create', [App\Http\Controllers\CategoryController::class, 'create'])->name('categories.create');
-Route::post('/categories', [App\Http\Controllers\CategoryController::class, 'store'])->name('categories.store');
-Route::get('/categories/category', [App\Http\Controllers\CategoryController::class, 'show'])->name('categories.show');
-Route::get('/categories/category/edit', [App\Http\Controllers\CategoryController::class, 'edit'])->name('categories.edit');
-Route::put('/categories/category', [App\Http\Controllers\CategoryController::class, 'update'])->name('categories.update');
-Route::delete('/categories/category', [App\Http\Controllers\CategoryController::class, 'destroy'])->name('categories.destroy');
-/***********FIN RUTAS DE categories ***********************/
-
-
-/***********RUTAS DE categories ***************************/
-Route::get('/categories/index', [App\Http\Controllers\CategoryController::class, 'index'])->name('categories.index');
-Route::get('/categories/create', [App\Http\Controllers\CategoryController::class, 'create'])->name('categories.create');
-Route::post('/categories', [App\Http\Controllers\CategoryController::class, 'store'])->name('categories.store');
-Route::get('/categories/category', [App\Http\Controllers\CategoryController::class, 'show'])->name('categories.show');
-Route::get('/categories/category/edit', [App\Http\Controllers\CategoryController::class, 'edit'])->name('categories.edit');
-Route::put('/categories/category', [App\Http\Controllers\CategoryController::class, 'update'])->name('categories.update');
-Route::delete('/categories/category', [App\Http\Controllers\CategoryController::class, 'destroy'])->name('categories.destroy');
-/***********FIN RUTAS DE categories ***********************/
+ 

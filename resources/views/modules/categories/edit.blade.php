@@ -6,8 +6,8 @@
         <div class="mb-4">
             <h1 class="font-serif text-3xl font-bold">Editar category</h1>
         </div>
-  <div class="w-full px-6 py-4 bg-white rounded shadow-md ring-1 ring-gray-900/10">
-      <form method="POST" action="{{ route('categories.update') }}">
+    <div class="w-full px-6 py-4 bg-white rounded shadow-md ring-1 ring-gray-900/10">
+      <form method="POST" action="{{ route('categories.update',$category->id) }}">
         @csrf
         @method('PUT')
           <!-- varchar(255) -->
@@ -17,7 +17,7 @@
               </label>
                 <input id="category_name"
                 class="form-control block w-full mt-1 border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 placeholder:text-right focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                type="text" name="name" placeholder="Input name" value="{{ category->name }}">
+                type="text" name="name" placeholder="Input name" value="{{ $category->name }}">
               @error('name')
               <span class="text-red-600 text-sm">
                 {{ $message }}
@@ -31,7 +31,7 @@
               </label>
                 <input id="category_description"
                 class="form-control block w-full mt-1 border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 placeholder:text-right focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                type="text" name="description" placeholder="Input description" value="{{ category->description }}">
+                type="text" name="description" placeholder="Input description" value="{{ $category->description }}">
               @error('description')
               <span class="text-red-600 text-sm">
                 {{ $message }}
@@ -45,7 +45,7 @@
               </label>
                 <input id="category_short"
                 class="form-control block w-full mt-1 border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 placeholder:text-right focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                type="text" name="short" placeholder="Input short" value="{{ category->short }}">
+                type="text" name="short" placeholder="Input short" value="{{ $category->short }}">
               @error('short')
               <span class="text-red-600 text-sm">
                 {{ $message }}
@@ -59,7 +59,7 @@
               </label>
                 <select id="category_parent_id"
                 class="form-control block w-full mt-1 border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 placeholder:text-right focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                 name="parent_id" placeholder="180" value="{{ category->parent_id }}">
+                 name="parent_id" placeholder="180">
                           <option value="0">Superior</option>
                   @foreach ($parent_id as $item)
                     <option value="{{ $item->id }}">
@@ -90,7 +90,7 @@
               </label>
                 <input id="category_reference"
                 class="form-control block w-full mt-1 border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 placeholder:text-right focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                type="text" name="reference" placeholder="Input reference" value="{{ category->reference }}">
+                type="text" name="reference" placeholder="Input reference" value="{{ $category->reference }}">
               @error('reference')
               <span class="text-red-600 text-sm">
                 {{ $message }}
@@ -104,7 +104,7 @@
               </label>
                 <select id="category_user_id"
                 class="form-control block w-full mt-1 border-gray-300 rounded-md shadow-sm placeholder:text-gray-400 placeholder:text-right focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                 name="user_id" placeholder="180" value="{{ category->user_id }}">
+                 name="user_id" placeholder="180">
                           <option value="">Seleccione user_id</option>
                   @foreach ($user_id as $item)
                     <option value="{{ $item->id }}">
@@ -129,7 +129,7 @@
               @enderror
          </div>
                     <br>
-                    <button type="submit" class="btn btn-primary">Create category</button>
+                    <button type="submit" class="btn btn-primary">Actualizar category</button>
             </form>
         </div>
     </div>
