@@ -122,8 +122,36 @@ class crudFidel extends Command
         if ($prefijo != '' && !file_exists($ruta_views)) {
             mkdir($ruta_views, 0700); //creando directorio para las vistas
         }
-         
-        /*********** VIEW INDEX ****************************************************************/
+        /************ VIEW INDEX *************************************************************************/
+        $menu_op = ['Lista de '.$tableName,'Crear '.$model, 
+                    'Gráfico de registros por año / '.$model, 'Gráfico de registros por mes / '.$model,
+                    'Gráfico de registros mes por mes / '.$model,
+                   ];
+        $menu_cat = ['List','Register','Graphic','Graphic','Graphic'];      
+        $menu_rut = ["'".$tableName.'.list'."'","'".$tableName.'.create'."'","'".$tableName.'.YearRegister'."', date('Y') ",
+                    "'".$tableName.'.MonthRegister'."',['year' => date('Y') ,'mes' => date('m') ]",
+                    "'".$tableName.'.BetweenMonthRegister'."',['year' => date('Y') ,'f_mes' => date('m'),'l_mes' => date('m')+1]"];    
+
+        $data_to_write =  "@extends('layouts.app')".PHP_EOL;
+        $data_to_write .= "@section('content')".PHP_EOL;
+        $data_to_write .= '<div class="row">'.PHP_EOL;
+        foreach ($menu_op as $k => $title) {
+            $data_to_write .= ' <div class="card text-white bg-primary mb-3 col-4">'.PHP_EOL;
+            $data_to_write .= '   <a href="{{ route('.$menu_rut[$k].') }}" class="text-white" style="color:#fff">'.PHP_EOL;
+            $data_to_write .= '       <div class="card-header">'.$menu_cat[$k].'</div>'.PHP_EOL;
+            $data_to_write .= '       <div class="card-body">'.PHP_EOL;
+            $data_to_write .= '         <h5 class="card-title">'.$title.'</h5>'.PHP_EOL;
+            $data_to_write .= '         <p class="card-text"></p>'.PHP_EOL;
+            $data_to_write .= '       </div>'.PHP_EOL; 
+            $data_to_write .=  '  </a>'.PHP_EOL;
+            $data_to_write .= ' </div>'.PHP_EOL;  
+        }
+        $data_to_write .= '</div>'.PHP_EOL;  
+        $data_to_write .= "@endsection".PHP_EOL;
+        $file_handle = fopen($ruta_views."index.blade.php", 'w'); 
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);
+        /*********** VIEW LISTA **************************************************************************/
         $data_to_write = "@extends('layouts.app')".PHP_EOL;
         $data_to_write .= "@section('content')".PHP_EOL;
         $data_to_write .= '<div class="container max-w-6xl mx-auto mt-20">'.PHP_EOL;
@@ -189,7 +217,7 @@ class crudFidel extends Command
         $data_to_write .= "@endsection".PHP_EOL;
         $data_to_write .= "@push('footer')".PHP_EOL; 
         $data_to_write .= "@endpush('footer')".PHP_EOL; 
-        $file_handle = fopen($ruta_views."index.blade.php", 'w'); 
+        $file_handle = fopen($ruta_views."list.blade.php", 'w'); 
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /*************************** VISTA CREATE **************************************************/
@@ -412,31 +440,47 @@ class crudFidel extends Command
         $data_to_write .= '    </h1>'.PHP_EOL;  
         $data_to_write .= '  </div>'.PHP_EOL; 
         $data_to_write .= ' </div>'.PHP_EOL;   
-        $data_to_write .= ' <canvas id="myChart" height="100px"></canvas>'.PHP_EOL;   
+        $data_to_write .= ' <div class="chart-container row" style="position: relative; ">'.PHP_EOL;   
+        $data_to_write .= '   <div class="col">'.PHP_EOL;   
+        $data_to_write .= '     <canvas id="myChartBar" width="400px" height="100%"></canvas>'.PHP_EOL;   
+        $data_to_write .= '   </div>'.PHP_EOL;   
+        $data_to_write .= '   <div class="col">'.PHP_EOL;  
+        $data_to_write .= '     <canvas id="myChartLine" width="400px" height="100%"></canvas>'.PHP_EOL;  
+        $data_to_write .= '   </div> '.PHP_EOL;  
+        $data_to_write .= ' </div>'.PHP_EOL;   
         $data_to_write .= '</div>'.PHP_EOL;   
         $data_to_write .= "@endsection".PHP_EOL;
         $data_to_write .= "@push('scripts')".PHP_EOL;  
-        $data_to_write .= ' <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>'.PHP_EOL; 
+        $data_to_write .= ' <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>'.PHP_EOL; 
         $data_to_write .= ' <script type="text/javascript">'.PHP_EOL; 
         $data_to_write .= '  var labels =  {{ Js::from($labels) }};'.PHP_EOL; 
         $data_to_write .= '  var datos =  {{ Js::from($data) }};'.PHP_EOL; 
         $data_to_write .= '  const data = {'.PHP_EOL; 
         $data_to_write .= '  labels: labels,'.PHP_EOL; 
         $data_to_write .= '  datasets: [{'.PHP_EOL; 
-        $data_to_write .= '   label: \'My First dataset\','.PHP_EOL; 
+        $data_to_write .= '   label: {{ Js::from($label) }},'.PHP_EOL; 
         $data_to_write .= '   backgroundColor: \'rgb(255, 99, 132)\','.PHP_EOL; 
         $data_to_write .= '   borderColor: \'rgb(255, 99, 132)\','.PHP_EOL; 
         $data_to_write .= '   data: datos,'.PHP_EOL; 
         $data_to_write .= '  }]'.PHP_EOL; 
         $data_to_write .='  };'.PHP_EOL; 
-        $data_to_write .='  const config = {'.PHP_EOL; 
-        $data_to_write .='   type: \'line\','.PHP_EOL; 
-        $data_to_write .='   data: data,'.PHP_EOL; 
-        $data_to_write .='   options: {}'.PHP_EOL; 
-        $data_to_write .='  };'.PHP_EOL; 
-        $data_to_write .='  const myChart = new Chart('.PHP_EOL; 
-        $data_to_write .='   document.getElementById(\'myChart\'),'.PHP_EOL; 
-        $data_to_write .='   config'.PHP_EOL; 
+        $data_to_write .='  const config1 = {'.PHP_EOL; 
+        $data_to_write .='     type: \'bar\','.PHP_EOL; 
+        $data_to_write .='     data: data,'.PHP_EOL; 
+        $data_to_write .='     options: {}'.PHP_EOL; 
+        $data_to_write .='   };'.PHP_EOL;  
+        $data_to_write .='  const config2 = {'.PHP_EOL; 
+        $data_to_write .='     type: \'line\','.PHP_EOL; 
+        $data_to_write .='     data: data,'.PHP_EOL; 
+        $data_to_write .='     options: {}'.PHP_EOL; 
+        $data_to_write .='   };'.PHP_EOL;  
+        $data_to_write .='  const myChart1 = new Chart('.PHP_EOL; 
+        $data_to_write .='   document.getElementById(\'myChartBar\'),'.PHP_EOL; 
+        $data_to_write .='   config1'.PHP_EOL; 
+        $data_to_write .='  );'.PHP_EOL; 
+        $data_to_write .='  const myChart2 = new Chart('.PHP_EOL; 
+        $data_to_write .='   document.getElementById(\'myChartLine\'),'.PHP_EOL; 
+        $data_to_write .='   config2'.PHP_EOL; 
         $data_to_write .='  );'.PHP_EOL; 
         $data_to_write .=' </script>'.PHP_EOL; 
         $data_to_write .= "@endpush('scripts')".PHP_EOL; 
@@ -450,7 +494,8 @@ class crudFidel extends Command
         //Agregar autenticación a las rutas en caso se defina desde el comando
         $auth_b = $auth == true ? "->middleware(['auth']);" : "";
         $data_to_write .= "/********************** RUTAS DE $tableName *********************************************************"."/".PHP_EOL;
-        $data_to_write .= "Route::get('/$tableName/index', [App\Http\Controllers\\".$controller."::class, 'index'])->name('".$tableName.".index')$auth_b;".PHP_EOL;
+        $data_to_write .= "Route::get('/$tableName', [App\Http\Controllers\\".$controller."::class, 'index'])->name('".$tableName.".index')$auth_b;".PHP_EOL;
+        $data_to_write .= "Route::get('/$tableName/list', [App\Http\Controllers\\".$controller."::class, 'list'])->name('".$tableName.".list')$auth_b;".PHP_EOL;
         $data_to_write .= "Route::get('/$tableName/create', [App\Http\Controllers\\".$controller."::class, 'create'])->name('".$tableName.".create')$auth_b;".PHP_EOL;
         $data_to_write .= "Route::post('/$tableName/store', [App\Http\Controllers\\".$controller."::class, 'store'])->name('".$tableName.".store')$auth_b;".PHP_EOL;
         $data_to_write .= "Route::get('/$tableName/show/{id}', [App\Http\Controllers\\".$controller."::class, 'show'])->name('".$tableName.".show')$auth_b;".PHP_EOL;
@@ -566,14 +611,20 @@ class crudFidel extends Command
         $data_to_write .= ' namespace App\Http\Controllers;'.PHP_EOL;
         $data_to_write .= ' use Illuminate\Http\Request;'.PHP_EOL;
         $data_to_write .= ' use App\Models\\'.$model.';'.PHP_EOL; 
-        $data_to_write .= ' use App\Http\Requests\\'.ucfirst($model).'Request;'.PHP_EOL.PHP_EOL;
+        $data_to_write .= ' use App\Http\Requests\\'.ucfirst($model).'Request;'.PHP_EOL.PHP_EOL; 
         $data_to_write .= " class $controller extends Controller".PHP_EOL;
         $data_to_write .= ' {'.PHP_EOL;
+        $data_to_write .= '  private $meses = [\'Enero\',\'Febrero\',\'Marzo\',\'Abril\',\'Mayo\',\'Junio\',\'Julio\',\'Agosto\',\'Setiembre\',\'Octubre\',\'Noviembre\',\'Diciembre\'];'.PHP_EOL;
         /******************* Método index *****************************************************/
         $data_to_write .= '  public function index()'.PHP_EOL;
+        $data_to_write .= '  {'.PHP_EOL; 
+        $data_to_write .= "    return view('".$prefijo.".".$tableName.".index');".PHP_EOL;
+        $data_to_write .= '  }'.PHP_EOL; 
+        /******************* Método List *****************************************************/
+        $data_to_write .= '  public function list()'.PHP_EOL;
         $data_to_write .= '  {'.PHP_EOL;
         $data_to_write .= '    $'.$model.' = '.$model.'::latest()->paginate(10);'.PHP_EOL;
-        $data_to_write .= "    return view('".$prefijo.".".$tableName.".index', compact('".$model."'));".PHP_EOL;
+        $data_to_write .= "    return view('".$prefijo.".".$tableName.".list', compact('".$model."'));".PHP_EOL;
         $data_to_write .= '  }'.PHP_EOL; 
         /******************* Método create *****************************************************/
         $data_to_write .= '  public function create()'.PHP_EOL;
@@ -605,7 +656,7 @@ class crudFidel extends Command
         $data_to_write .= '         throw $e;'.PHP_EOL;
         $data_to_write .= '     }'.PHP_EOL;
         $data_to_write .= PHP_EOL;
-        $data_to_write .= "     return redirect()->route('".$tableName.".index')->with('message', '".$model." Created Successfully');".PHP_EOL;
+        $data_to_write .= "     return redirect()->route('".$tableName.".list')->with('message', '".$model." Created Successfully');".PHP_EOL;
         $data_to_write .= '  }'.PHP_EOL; 
         /********************Método show *****************************************************************/
         $data_to_write .= '  public function show($id)'.PHP_EOL;
@@ -652,7 +703,7 @@ class crudFidel extends Command
         $data_to_write .= '         \DB::rollBack();'.PHP_EOL;
         $data_to_write .= '         throw $e;'.PHP_EOL;
         $data_to_write .= '     }'.PHP_EOL; 
-        $data_to_write .= "     return redirect()->route('".$tableName.".index')->with('message', '".$model." updated Successfully');".PHP_EOL;
+        $data_to_write .= "     return redirect()->route('".$tableName.".list')->with('message', '".$model." updated Successfully');".PHP_EOL;
         $data_to_write .= '  }'.PHP_EOL;
         /*********Método destroy *****************************************************/
         $data_to_write .= '  public function destroy($id)'.PHP_EOL;
@@ -669,7 +720,7 @@ class crudFidel extends Command
         $data_to_write .= '         \DB::rollBack();'.PHP_EOL;
         $data_to_write .= '         throw $e;'.PHP_EOL;
         $data_to_write .= '     }'.PHP_EOL;  
-        $data_to_write .= "     return redirect()->route('".$tableName.".index')->with('message', '".$model." Deleted Successfully');".PHP_EOL;
+        $data_to_write .= "     return redirect()->route('".$tableName.".list')->with('message', '".$model." Deleted Successfully');".PHP_EOL;
         $data_to_write .= '  }'.PHP_EOL; 
         /*********Método search *****************************************************/
         $data_to_write .= '  public function search(Request $request)'.PHP_EOL;
@@ -685,17 +736,24 @@ class crudFidel extends Command
             }      
         $data_to_write .= '                       })'.PHP_EOL; 
         $data_to_write .= '                       ->paginate(10);'.PHP_EOL; 
-        $data_to_write .= '     return view(\''.$prefijo.".".$tableName.'.index\', compact(\'origin\', \'search\',\'resultsSearch\'));'.PHP_EOL;  
+        $data_to_write .= '     return view(\''.$prefijo.".".$tableName.'.list\', compact(\'origin\', \'search\',\'resultsSearch\'));'.PHP_EOL;  
         $data_to_write .= '  }'.PHP_EOL;
         /*************** Método  FECHAS ******************************************************/
         $data_to_write .= '  public function '.$model.'YearRegister($year = \'\')'.PHP_EOL;
         $data_to_write .= '  {'.PHP_EOL;
         $data_to_write .= '     $year = $year == \'\' ? date(\'Y\') : $year;'.PHP_EOL; 
-        $data_to_write .= '     $result = '.$model.'::whereYear(\'created_at\', $year)'.PHP_EOL; 
-	    $data_to_write .= "     ->get();".PHP_EOL;
-        $data_to_write .= '     $labels = $result->keys();'.PHP_EOL;
-        $data_to_write .= '     $data = $result->values();'.PHP_EOL;
-        $data_to_write .= '     return view(\''.$prefijo.".".$tableName.'.date_year_register\', compact(\'labels\',\'data\'));'.PHP_EOL;  
+        $data_to_write .= '     $result = '.$model.'::select(\DB::raw("COUNT(*) as count"), \DB::raw("MONTH(created_at) as month_name"))'.PHP_EOL; 
+        $data_to_write .= '     ->whereYear(\'created_at\', $year)'.PHP_EOL; 
+        $data_to_write .= '     ->groupBy(\DB::raw("Month(created_at)"))'.PHP_EOL; 
+        $data_to_write .= "     ->pluck('count', 'month_name');".PHP_EOL; 
+        $data_to_write .= '     $label_data = $result->keys();'.PHP_EOL; 
+        $data_to_write .= '     $labels = [];'.PHP_EOL; 
+        $data_to_write .= '     foreach ($label_data as $key => $value) {'.PHP_EOL; 
+        $data_to_write .= '       $labels[$key] = $this->meses[$value-1];'.PHP_EOL; 
+        $data_to_write .= '     }'.PHP_EOL; 
+        $data_to_write .= '     $data = $result->values();'.PHP_EOL; 
+        $data_to_write .= '     $label = \'Cantidad de registros del año \'.$year;'.PHP_EOL; 
+        $data_to_write .= '     return view(\''.$prefijo.".".$tableName.'.date_year_register\', compact(\'label\',\'labels\',\'data\'));'.PHP_EOL;  
         $data_to_write .= '  }'.PHP_EOL;
         $data_to_write .= '  public function '.$model.'MonthRegister($year = \'\',$mes = \'\')'.PHP_EOL;
         $data_to_write .= '  {'.PHP_EOL;

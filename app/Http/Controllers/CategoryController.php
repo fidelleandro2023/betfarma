@@ -6,10 +6,15 @@
 
  class CategoryController extends Controller
  {
+  private $meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Setiembre','Octubre','Noviembre','Diciembre'];
   public function index()
   {
+    return view('modules.categories.index');
+  }
+  public function list()
+  {
     $category = category::latest()->paginate(10);
-    return view('modules.categories.index', compact('category'));
+    return view('modules.categories.list', compact('category'));
   }
   public function create()
   {
@@ -34,7 +39,7 @@
          throw $e;
      }
 
-     return redirect()->route('categories.index')->with('message', 'category Created Successfully');
+     return redirect()->route('categories.list')->with('message', 'category Created Successfully');
   }
   public function show($id)
   {
@@ -69,7 +74,7 @@
          \DB::rollBack();
          throw $e;
      }
-     return redirect()->route('categories.index')->with('message', 'category updated Successfully');
+     return redirect()->route('categories.list')->with('message', 'category updated Successfully');
   }
   public function destroy($id)
   {
@@ -85,7 +90,7 @@
          \DB::rollBack();
          throw $e;
      }
-     return redirect()->route('categories.index')->with('message', 'category Deleted Successfully');
+     return redirect()->route('categories.list')->with('message', 'category Deleted Successfully');
   }
   public function search(Request $request)
   {
@@ -101,16 +106,23 @@
                           $query->orWhere('user_id', 'LIKE', "%{$search}%");
                        })
                        ->paginate(10);
-     return view('modules.categories.index', compact('origin', 'search','resultsSearch'));
+     return view('modules.categories.list', compact('origin', 'search','resultsSearch'));
   }
   public function categoryYearRegister($year = '')
   {
      $year = $year == '' ? date('Y') : $year;
-     $result = category::whereYear('created_at', $year)
-     ->get();
-     $labels = $result->keys();
+     $result = category::select(\DB::raw("COUNT(*) as count"), \DB::raw("MONTH(created_at) as month_name"))
+     ->whereYear('created_at', $year)
+     ->groupBy(\DB::raw("Month(created_at)"))
+     ->pluck('count', 'month_name');
+     $label_data = $result->keys();
+     $labels = [];
+     foreach ($label_data as $key => $value) {
+       $labels[$key] = $this->meses[$value-1];
+     }
      $data = $result->values();
-     return view('modules.categories.date_year_register', compact('labels','data'));
+     $label = 'Cantidad de registros del año '.$year;
+     return view('modules.categories.date_year_register', compact('label','labels','data'));
   }
   public function categoryMonthRegister($year = '',$mes = '')
   {
