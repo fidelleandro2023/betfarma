@@ -1,0 +1,9 @@
+.link_card{
+    cursor: pointer;
+    color:#fff; text-decoration: none;
+    display: block;
+    margin-bottom: 10px;
+}
+.link_card:hover .card-body{
+    background-color: purple!important;
+}

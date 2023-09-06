@@ -134,18 +134,23 @@ class crudFidel extends Command
 
         $data_to_write =  "@extends('layouts.app')".PHP_EOL;
         $data_to_write .= "@section('content')".PHP_EOL;
-        $data_to_write .= '<div class="row">'.PHP_EOL;
+        $data_to_write .= '<div class="container">'.PHP_EOL;
+        $data_to_write .= ' <div class="row">'.PHP_EOL;
         foreach ($menu_op as $k => $title) {
-            $data_to_write .= ' <div class="card text-white bg-primary mb-3 col-4">'.PHP_EOL;
-            $data_to_write .= '   <a href="{{ route('.$menu_rut[$k].') }}" class="text-white" style="color:#fff">'.PHP_EOL;
-            $data_to_write .= '       <div class="card-header">'.$menu_cat[$k].'</div>'.PHP_EOL;
-            $data_to_write .= '       <div class="card-body">'.PHP_EOL;
+            $data_to_write .= ' <div class="col-4">'.PHP_EOL;
+            $data_to_write .= '  <a href="{{ route('.$menu_rut[$k].') }}" class="text-white link_card">'.PHP_EOL;
+            $data_to_write .= '   <div class="card text-white bg-primary">'.PHP_EOL; 
+            $data_to_write .= '       <div class="card-header text-uppercase">'.$menu_cat[$k].'</div>'.PHP_EOL;
+            $data_to_write .= '       <div class="card-body bg-secondary">'.PHP_EOL;
             $data_to_write .= '         <h5 class="card-title">'.$title.'</h5>'.PHP_EOL;
             $data_to_write .= '         <p class="card-text"></p>'.PHP_EOL;
             $data_to_write .= '       </div>'.PHP_EOL; 
-            $data_to_write .=  '  </a>'.PHP_EOL;
+            $data_to_write .= '       <div class="card-footer bg-dark border-success">Footer</div>'.PHP_EOL; 
+            $data_to_write .= '   </div>'.PHP_EOL; 
+            $data_to_write .=  ' </a>'.PHP_EOL; 
             $data_to_write .= ' </div>'.PHP_EOL;  
         }
+        $data_to_write .= ' </div>'.PHP_EOL; 
         $data_to_write .= '</div>'.PHP_EOL;  
         $data_to_write .= "@endsection".PHP_EOL;
         $file_handle = fopen($ruta_views."index.blade.php", 'w'); 
