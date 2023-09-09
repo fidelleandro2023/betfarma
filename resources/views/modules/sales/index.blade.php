@@ -38,27 +38,27 @@
                                         <th class="col">total</th>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td class="col-md-3">
-                                                <input type="text" class="form-control">
+                                        <tr class="active">
+                                            <td class="col-md-3 ">
+                                                <input onclick="clickTextField(this)" onkeyup="keyTextField(this,event)" type="text" class="name form-control">
                                             </td>
-                                            <td class="col-md-2">
-                                                <input type="text" class="form-control">
+                                            <td class="col-md-2 ">
+                                                <input onclick="clickTextField(this)"  onkeyup="keyTextField(this,event)" type="text" class="cantidad form-control">
                                             </td>
-                                            <td class="col col-md-2">
-                                                <input type="text" class="form-control">
+                                            <td class="col col-md-2 ">
+                                                <input onclick="clickTextField(this)" onkeyup="keyTextField(this,event)" type="text" class="lote form-control">
+                                            </td>
+                                            <td class="col ">
+                                                <input onclick="clickTextField(this)" onkeyup="keyTextField(this,event)" type="text" class="psp form-control">
+                                            </td>
+                                            <td class="col ">
+                                                <input onclick="clickTextField(this)" onkeyup="keyTextField(this,event)" type="text" class="dscto form-control">
+                                            </td>
+                                            <td class="col ">
+                                                <input onclick="clickTextField(this)" onkeyup="keyTextField(this,event)" type="text" class="pvp form-control">
                                             </td>
                                             <td class="col">
-                                                <input type="text" class="form-control">
-                                            </td>
-                                            <td class="col">
-                                                <input type="text" class="form-control">
-                                            </td>
-                                            <td class="col">
-                                                <input type="text" class="form-control">
-                                            </td>
-                                            <td class="col">
-                                                <input type="text" class="form-control">
+                                                <input onclick="clickTextField(this)" onkeyup="keyTextField(this,event)" type="text" class="total form-control">
                                             </td>
                                         </tr>
                                     </tbody>

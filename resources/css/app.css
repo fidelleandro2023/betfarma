@@ -5,3 +5,6 @@
 .link_card{
     cursor: pointer;
 }
+.link_card:hover{
+    cursor: pointer;
+} 

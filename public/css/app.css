@@ -7,3 +7,6 @@
 .link_card:hover .card-body{
     background-color: purple!important;
 }
+.link_card:hover .card-header{
+    background-color: blueviolet!important;
+}
