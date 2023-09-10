@@ -7,6 +7,14 @@ use Illuminate\Http\Request;
 
 class SaleController extends Controller
 {
+    public function autocompletebusinessName(Request $request)
+    {
+        $data = User::select("name as value", "id")
+                    ->where('name', 'LIKE', '%'. $request->get('search'). '%')
+                    ->get();
+    
+        return response()->json($data);
+    }
     public function index()
     {
         //echo 'maiz'; exit;

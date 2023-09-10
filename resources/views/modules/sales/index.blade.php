@@ -13,16 +13,14 @@
                 <div class="modal-body"> 
                     <table class="table">
                         <thead>
-                            <thead>Nombre comercial</thead>
-                            <thead>Lab</thead>
-                            <thead>Precio Dscto</thead>
-                            <thead>Precio unit</thead>
-                            <thead>Stock caja</thead>
-                            <thead>Stock unit</thead>
+                            <th class="col-4">Nombre comercial</th>
+                            <th class="col-3">Lab</th>
+                            <!-- <th>Precio Dscto</th> -->
+                            <th class="col-2">Precio unit</th>
+                            <th class="col-1">Stock caja</th>
+                            <th class="col-2">Stock unit</th>
                         </thead>
-                        <tbody>
-
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
                 <div class="modal-footer">

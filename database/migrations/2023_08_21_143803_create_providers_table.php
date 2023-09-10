@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('fanpage')->nullable()->comment("Direccion de fanpage del proveedor (opcional)");
             $table->string('instagram')->nullable()->comment("");
             $table->string('description')->comment("");
+            $table->char('status',1)->comment("A = ACTIVE, I= INACTIVE");
             $table->string('address')->comment("Direccion fisica del proveedor");
             $table->bigInteger('stakeholder')->unsigned()->nullable()->comment("Persona de referencia del proveedor");
             $table->integer('qualification')->comment("Calificacion del proveedor");

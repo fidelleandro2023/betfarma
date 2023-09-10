@@ -32,6 +32,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 /***************************************MODULOS*****************************************************/
 /*************************************MODULO VENTAS*************************************************/
 Route::get('/ventas', [App\Http\Controllers\SaleController::class, 'index'])->name('home_sales');
+Route::get('/ventas', [App\Http\Controllers\SaleController::class, 'autocompletebusinessName'])->name('sales.autocomplete.name');
 /**************************************************************************************************/
 Route::get('/clear-cache-all', function() {
     Artisan::call('cache:clear'); 
