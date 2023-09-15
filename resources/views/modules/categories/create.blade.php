@@ -1,11 +1,14 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 @section('content')
-<div class="container">
-  <div class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 sm:justify-center sm:pt-0">
+<div class="row column_title">
+   <div class="col-md-12">
+      <div class="page_title">
+        <h2>Crear category</h2>
+      </div>
+   </div>
+</div>
+<div class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 sm:justify-center sm:pt-0">
     <div class="w-full px-16 py-20 mt-6 overflow-hidden bg-white rounded-lg lg:max-w-4xl">
-        <div class="mb-4">
-            <h1 class="font-serif text-3xl font-bold">Crear category</h1>
-        </div>
   <div class="w-full px-6 py-4 bg-white rounded shadow-md ring-1 ring-gray-900/10">
       <form method="POST" action="{{ route('categories.store') }}">
         @csrf
@@ -133,4 +136,4 @@
         </div>
     </div>
 </div>
-</div>
+@endsection

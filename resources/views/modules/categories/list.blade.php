@@ -1,17 +1,18 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 @section('content')
-<div class="container max-w-6xl mx-auto mt-20">
+<div class="row column_title">
+   <div class="col-md-12">
+      <div class="page_title">
+        <h2>Lista de categories</h2>
+      </div>
+   </div>
+</div>
  <div class="mb-4">
-   <h1 class="font-serif text-3xl font-bold underline decoration-gray-400"> categories Index</h1>
    @if (session()->has('message'))
     <div class="p-3 rounded bg-green-500 text-green-100 my-2">
       {{ session('message') }}
     </div>
    @endif
-   <div class="flex justify-end">
-    <a href="{{ route('categories.create') }}"
-     class="px-4 py-2 rounded-md bg-sky-500 text-sky-100 hover:bg-sky-600">Crear categories</a>
-   </div>
  </div>
  <div class="flex flex-col">
    <div class="overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
@@ -99,7 +100,6 @@
     </div>
    </div>
  </div>
-</div>
 @endsection
 @push('footer')
 @endpush('footer')

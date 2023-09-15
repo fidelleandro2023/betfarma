@@ -45,6 +45,51 @@ class crudFidel extends Command
         /*if (!file_exists(base_path()."\database\migrations\\".$migration.".php")) {
             echo 'No existe la migración'; exit;
         }*/
+        /****CREANDO MIGRACIONES PARA ROLES, USERS Y PERMISOS********************* */
+        $rolperuse = array(0 => array('table' => 'roles',
+                                      'columns' => ''
+                                      ),
+                            1 => array('table' => 'permissions',
+                                        'columns' => ''
+                                      ),
+                            2 => array('table' => 'permission_roles',
+                                       'columns' => ''
+                                      ),
+                            3 => array('table' => 'user_roles',
+                                       'columns' => ''
+                                      )
+                            );
+        /***************ROLES *****************************************************/
+        foreach ($rolperuse as $key => $row) {
+        $file_handle = fopen(base_path()."\database\migrations\\2014_10_12_000001_create_roles_table.php", 'w');
+        $data_to_write = '<?php'.PHP_EOL;
+        $data_to_write .= ' use Illuminate\Database\Migrations\Migration;'.PHP_EOL;
+        $data_to_write .= ' use Illuminate\Database\Schema\Blueprint;'.PHP_EOL;
+        $data_to_write .= ' use Illuminate\Support\Facades\Schema;'.PHP_EOL;
+        $data_to_write .= ' return new class extends Migration'.PHP_EOL;
+        $data_to_write .= ' {'.PHP_EOL;
+        $data_to_write .= '   /**'.PHP_EOL;
+        $data_to_write .= '   * Run the migrations.'.PHP_EOL;
+        $data_to_write .= '   */'.PHP_EOL;
+        $data_to_write .= '   public function up(): void'.PHP_EOL;
+        $data_to_write .= '   {'.PHP_EOL;
+        $data_to_write .= '      Schema::create(\''.$row['table'].'\', function (Blueprint $table) { '.PHP_EOL;
+        $data_to_write .= '       $table->id();'.PHP_EOL;
+        $data_to_write .= '      '.$row['columns'].PHP_EOL; 
+        $data_to_write .= '      });'.PHP_EOL;
+        $data_to_write .= '   }'.PHP_EOL; 
+        $data_to_write .= '   /**'.PHP_EOL;
+        $data_to_write .= '   * Reverse the migrations.'.PHP_EOL;
+        $data_to_write .= '   */'.PHP_EOL; 
+        $data_to_write .= '   public function down(): void'.PHP_EOL;
+        $data_to_write .= '   {'.PHP_EOL;
+        $data_to_write .= '     Schema::dropIfExists(\''.$row['table'].'\');'.PHP_EOL; 
+        $data_to_write .= '   }'.PHP_EOL;
+        $data_to_write .= '};'.PHP_EOL; 
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);
+        }
+        
         /************ Cargando model de forma dinamica **********************/
         include(base_path().'\app\Models\\'.$model.'.php');
         $modelDB = \App::make('App\Models\\'.$model); 
@@ -113,6 +158,142 @@ class crudFidel extends Command
         $file_handle = fopen(base_path()."\app\Http\Controllers\\".$controller.".php", 'w'); 
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
+         /******************* CREAR CARPETA VIEWS DASHBOARD *************************************************/ 
+         if ($prefijo != '' && !file_exists(base_path()."\\resources\\views\\dashboard")) { 
+            mkdir(base_path()."\\resources\\views\\dashboard", 0700);
+        }
+        $ruta_dashboard = base_path()."\\resources\\views\\dashboard\\";
+        /*************************** VISTA DASHBOARD HEAD **************************************************/ 
+        $data_to_write = '<!-- site icon -->'.PHP_EOL; 
+        $data_to_write .= '<link rel="icon" href="images/fevicon.png" type="image/png" />'.PHP_EOL; 
+        $data_to_write .= '<!-- bootstrap css -->'.PHP_EOL; 
+        $data_to_write .= '<link rel="stylesheet" href="{{ asset(\'css/dashboard/bootstrap.min.css\') }}" />'.PHP_EOL; 
+        $data_to_write .= '<!-- site css -->'.PHP_EOL;  
+        $data_to_write .= '<link rel="stylesheet" href="{{ asset(\'css/dashboard/style.css\') }}" />'.PHP_EOL;  
+        $data_to_write .= '<!-- responsive css -->'.PHP_EOL;  
+        $data_to_write .= '<link rel="stylesheet" href="{{ asset(\'css/dashboard/responsive.css\') }}" />'.PHP_EOL;  
+        $data_to_write .= '<!-- select bootstrap -->'.PHP_EOL;  
+        $data_to_write .= '<link rel="stylesheet" href="{{ asset(\'css/dashboard/bootstrap-select.css\') }}" />'.PHP_EOL;  
+        $data_to_write .= '<!-- scrollbar css -->'.PHP_EOL;  
+        $data_to_write .= '<link rel="stylesheet" href="{{ asset(\'css/dashboard/perfect-scrollbar.css\') }}" />'.PHP_EOL;  
+        $data_to_write .= '<!-- custom css -->'.PHP_EOL;     
+        $data_to_write .= '<link rel="stylesheet" href="{{ asset(\'css/dashboard/custom.css\') }}" />'.PHP_EOL;  
+        $data_to_write .= '<!--[if lt IE 9]>'.PHP_EOL;  
+        $data_to_write .= '<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>'.PHP_EOL;  
+        $data_to_write .= '<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>'.PHP_EOL;  
+        $data_to_write .= '<![endif]-->'.PHP_EOL;  
+        $file_handle = fopen($ruta_dashboard."head.blade.php", 'w'); 
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);  
+        /*************************** VISTA DASHBOARD FOOTER **************************************************/ 
+        $data_to_write = '<p class="">'.PHP_EOL; 
+        $data_to_write .= '  Copyright © {{'.date('Y').'}} Designed. All rights reserved.'.PHP_EOL; 
+        $data_to_write .= '  <br>'.PHP_EOL; 
+        $data_to_write .= '  <a class="" href="www.chepengospel.com">Chepen gospel</a>'.PHP_EOL; 
+        $data_to_write .= '</p>'.PHP_EOL;     
+        $file_handle = fopen($ruta_dashboard."footer.blade.php", 'w'); 
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);
+        /*************************** VISTA DASHBOARD SIDEBAR **************************************************/ 
+        $data_to_write = '<div class="sidebar_blog_1">'.PHP_EOL;
+        $data_to_write .= '  <div class="sidebar-header">'.PHP_EOL;
+        $data_to_write .= '    <div class="logo_section">'.PHP_EOL;
+        $data_to_write .= '     <a href="index.html"><img class="logo_icon img-responsive" src="images/logo/logo_icon.png" alt="#" /></a>'.PHP_EOL; 
+        $data_to_write .= '    </div>'.PHP_EOL;
+        $data_to_write .= '  </div>'.PHP_EOL;
+        $data_to_write .= '  <div class="sidebar_user_info">'.PHP_EOL;
+        $data_to_write .= '    <div class="icon_setting"></div>'.PHP_EOL;
+        $data_to_write .= '    <div class="user_profle_side">'.PHP_EOL;
+        $data_to_write .= '      <div class="user_img"><img class="img-responsive" src="images/layout_img/user_img.jpg" alt="#" /></div>'.PHP_EOL;  
+        $data_to_write .= '      <div class="user_info">'.PHP_EOL;
+        $data_to_write .= '        <h6>John David</h6>'.PHP_EOL;
+        $data_to_write .= '        <p><span class="online_animation"></span> Online</p>'.PHP_EOL;
+        $data_to_write .= '      </div>'.PHP_EOL;
+        $data_to_write .= '    </div>'.PHP_EOL;
+        $data_to_write .= '  </div>'.PHP_EOL;
+        $data_to_write .= '</div>'.PHP_EOL;
+        $data_to_write .= '<div class="sidebar_blog_2">'.PHP_EOL;
+        $data_to_write .= '  <h4>General</h4>'.PHP_EOL;
+        $data_to_write .= '  <ul class="list-unstyled components">'.PHP_EOL;
+        $data_to_write .= '  </ul>'.PHP_EOL;
+        $data_to_write .='</div>'.PHP_EOL; 
+        $file_handle = fopen($ruta_dashboard."sidebar.blade.php", 'w'); 
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);  
+        /*************************** VISTA DASHBOARD TOPBAR **************************************************/ 
+        $data_to_write = '<div class="icon_info">'.PHP_EOL;
+        $data_to_write .= '  <ul>'.PHP_EOL;
+        $data_to_write .= '    <li><a href="#"><i class="fa fa-bell-o"></i><span class="badge">2</span></a></li>'.PHP_EOL;
+        $data_to_write .= '    <li><a href="#"><i class="fa fa-question-circle"></i></a></li>'.PHP_EOL; 
+        $data_to_write .= '    <li><a href="#"><i class="fa fa-envelope-o"></i><span class="badge">3</span></a></li>'.PHP_EOL;
+        $data_to_write .= '  </ul>'.PHP_EOL;
+        $data_to_write .= '  <ul class="user_profile_dd">'.PHP_EOL;
+        $data_to_write .= '    <li>'.PHP_EOL;
+        $data_to_write .= '      <a class="dropdown-toggle" data-toggle="dropdown"><img class="img-responsive rounded-circle" src="images/layout_img/user_img.jpg" alt="#" /><span class="name_user">John David</span></a>'.PHP_EOL;
+        $data_to_write .= '      <div class="dropdown-menu">'.PHP_EOL;  
+        $data_to_write .= '         <a class="dropdown-item" href="profile.html">My Profile</a>'.PHP_EOL;
+        $data_to_write .= '         <a class="dropdown-item" href="settings.html">Settings</a>'.PHP_EOL;
+        $data_to_write .= '         <a class="dropdown-item" href="help.html">Help</a>'.PHP_EOL;
+        $data_to_write .= '         <a class="dropdown-item" href="#"><span>Log Out</span> <i class="fa fa-sign-out"></i></a>'.PHP_EOL; 
+        $data_to_write .= '      </div>'.PHP_EOL;
+        $data_to_write .= '    </li>'.PHP_EOL;
+        $data_to_write .= '  </ul>'.PHP_EOL;
+        $data_to_write .= '</div>'.PHP_EOL; 
+        $file_handle = fopen($ruta_dashboard."topbar.blade.php", 'w'); 
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);    
+        $ruta_dashboard = base_path()."\\resources\\views\\layouts\\";
+        /*************************** VISTA DASHBOARD EN LAYOUT **************************************************/ 
+        $data_to_write = '<!DOCTYPE html>'.PHP_EOL;
+        $data_to_write .= '  <html lang="en">'.PHP_EOL;
+        $data_to_write .= '    <head>'.PHP_EOL;
+        $data_to_write .= '      <meta charset="utf-8">'.PHP_EOL; 
+        $data_to_write .= '      <meta http-equiv="X-UA-Compatible" content="IE=edge"> '.PHP_EOL;
+        $data_to_write .= '      <meta name="viewport" content="width=device-width, initial-scale=1">'.PHP_EOL;
+        $data_to_write .= '      <meta name="viewport" content="initial-scale=1, maximum-scale=1"> '.PHP_EOL;
+        $data_to_write .= '      <title></title>'.PHP_EOL;
+        $data_to_write .= '      <meta name="author" content="">'.PHP_EOL;
+        $data_to_write .= "      @include('dashboard.head')".PHP_EOL;  
+        $data_to_write .= '    </head>'.PHP_EOL;
+        $data_to_write .= '    <body class="dashboard dashboard_1">'.PHP_EOL;
+        $data_to_write .= '      <div class="full_container">'.PHP_EOL;
+        $data_to_write .= '        <div class="inner_container">'.PHP_EOL; 
+        $data_to_write .= '          <nav id="sidebar">'.PHP_EOL;
+        $data_to_write .= "          @include('dashboard.sidebar')".PHP_EOL;
+        $data_to_write .= '          </nav>'.PHP_EOL;
+        $data_to_write .= '          <div id="content">'.PHP_EOL;
+        $data_to_write .= '            <!-- topbar -->'.PHP_EOL;
+        $data_to_write .= '            <div class="topbar">'.PHP_EOL;
+        $data_to_write .= '              <nav class="navbar navbar-expand-lg navbar-light">'.PHP_EOL;
+        $data_to_write .= '                <div class="full">'.PHP_EOL;
+        $data_to_write .= '                  <button type="button" id="sidebarCollapse" class="sidebar_toggle"><i class="fa fa-bars"></i></button>'.PHP_EOL;
+        $data_to_write .= '                  <div class="logo_section">'.PHP_EOL;
+        $data_to_write .= '                    <a href="index.html"><img class="img-responsive" src="images/logo/logo.png" alt="#" /></a>'.PHP_EOL;
+        $data_to_write .= '                  </div>'.PHP_EOL;
+        $data_to_write .= '                  <div class="right_topbar">  '.PHP_EOL;
+        $data_to_write .= "                   @include('dashboard.topbar')".PHP_EOL;
+        $data_to_write .= '                  </div>'.PHP_EOL;
+        $data_to_write .= '                </div>'.PHP_EOL;
+        $data_to_write .= '             </nav>'.PHP_EOL;
+        $data_to_write .= '            </div>'.PHP_EOL; 
+        $data_to_write .= '            <div class="midde_cont">'.PHP_EOL;
+        $data_to_write .= '             <div class="container-fluid">'.PHP_EOL; 
+        $data_to_write .= "               @yield('content')".PHP_EOL;
+        $data_to_write .= '             </div>'.PHP_EOL; 
+        $data_to_write .= '             <div class="container-fluid">'.PHP_EOL;
+        $data_to_write .= '               <div class="footer">'.PHP_EOL; 
+        $data_to_write .= "                 @include('dashboard.footer')".PHP_EOL; 
+        $data_to_write .= '               </div> '.PHP_EOL;
+        $data_to_write .= '             </div>'.PHP_EOL; 
+        $data_to_write .= '           </div>'.PHP_EOL;
+        $data_to_write .= '         </div>'.PHP_EOL; 
+        $data_to_write .= '      </div>'.PHP_EOL; 
+        $data_to_write .= '  </div> '.PHP_EOL;
+        $data_to_write .= ' </body>'.PHP_EOL; 
+        $data_to_write .= '</html>'.PHP_EOL; 
+        $file_handle = fopen($ruta_dashboard."dashboard.blade.php", 'w'); 
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);     
         /************* CREAR CARPETA PREFIJO PARA VIEWS ****************************************/ 
         if ($prefijo != '' && !file_exists(base_path()."\\resources\\views\\".$prefijo)) { 
             mkdir(base_path()."\\resources\\views\\".$prefijo, 0700);
@@ -132,9 +313,15 @@ class crudFidel extends Command
                     "'".$tableName.'.MonthRegister'."',['year' => date('Y') ,'mes' => date('m') ]",
                     "'".$tableName.'.BetweenMonthRegister'."',['year' => date('Y') ,'f_mes' => date('m'),'l_mes' => date('m')+1]"];    
 
-        $data_to_write =  "@extends('layouts.app')".PHP_EOL;
+        $data_to_write =  "@extends('layouts.dashboard')".PHP_EOL;
         $data_to_write .= "@section('content')".PHP_EOL;
-        $data_to_write .= '<div class="container">'.PHP_EOL;
+        $data_to_write .= '<div class="row column_title">'.PHP_EOL;
+        $data_to_write .= '   <div class="col-md-12">'.PHP_EOL;
+        $data_to_write .= '      <div class="page_title">'.PHP_EOL;
+        $data_to_write .= '        <h2>Menú '.$tableName.'</h2>'.PHP_EOL;
+        $data_to_write .= '      </div>'.PHP_EOL;
+        $data_to_write .= '   </div>'.PHP_EOL;
+        $data_to_write .= '</div>'.PHP_EOL; 
         $data_to_write .= ' <div class="row">'.PHP_EOL;
         foreach ($menu_op as $k => $title) {
             $data_to_write .= ' <div class="col-4">'.PHP_EOL;
@@ -150,27 +337,27 @@ class crudFidel extends Command
             $data_to_write .=  ' </a>'.PHP_EOL; 
             $data_to_write .= ' </div>'.PHP_EOL;  
         }
-        $data_to_write .= ' </div>'.PHP_EOL; 
-        $data_to_write .= '</div>'.PHP_EOL;  
+        $data_to_write .= ' </div>'.PHP_EOL;  
         $data_to_write .= "@endsection".PHP_EOL;
         $file_handle = fopen($ruta_views."index.blade.php", 'w'); 
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /*********** VIEW LISTA **************************************************************************/
-        $data_to_write = "@extends('layouts.app')".PHP_EOL;
+        $data_to_write = "@extends('layouts.dashboard')".PHP_EOL;
         $data_to_write .= "@section('content')".PHP_EOL;
-        $data_to_write .= '<div class="container max-w-6xl mx-auto mt-20">'.PHP_EOL;
-        $data_to_write .= ' <div class="mb-4">'.PHP_EOL;
-        $data_to_write .= '   <h1 class="font-serif text-3xl font-bold underline decoration-gray-400"> '.$tableName.' Index</h1>'.PHP_EOL;
+        $data_to_write .= '<div class="row column_title">'.PHP_EOL;
+        $data_to_write .= '   <div class="col-md-12">'.PHP_EOL;
+        $data_to_write .= '      <div class="page_title">'.PHP_EOL;
+        $data_to_write .= '        <h2>Lista de '.$tableName.'</h2>'.PHP_EOL;
+        $data_to_write .= '      </div>'.PHP_EOL;
+        $data_to_write .= '   </div>'.PHP_EOL;
+        $data_to_write .= '</div>'.PHP_EOL;  
+        $data_to_write .= ' <div class="mb-4">'.PHP_EOL; 
         $data_to_write .= "   @if (session()->has('message'))".PHP_EOL;
         $data_to_write .= '    <div class="p-3 rounded bg-green-500 text-green-100 my-2">'.PHP_EOL;
         $data_to_write .= "      {{ session('message') }}".PHP_EOL;
         $data_to_write .= '    </div>'.PHP_EOL;
-        $data_to_write .= '   @endif'.PHP_EOL; 
-        $data_to_write .= '   <div class="flex justify-end">'.PHP_EOL; 
-        $data_to_write .= '    <a href="{{ route(\''.$tableName.'.create\') }}"'.PHP_EOL; 
-        $data_to_write .= '     class="px-4 py-2 rounded-md bg-sky-500 text-sky-100 hover:bg-sky-600">Crear '.$tableName.'</a>'.PHP_EOL; 
-        $data_to_write .= '   </div>'.PHP_EOL; 
+        $data_to_write .= '   @endif'.PHP_EOL;  
         $data_to_write .= ' </div>'.PHP_EOL; 
         $data_to_write .= ' <div class="flex flex-col">'.PHP_EOL; 
         $data_to_write .= '   <div class="overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">'.PHP_EOL; 
@@ -218,7 +405,6 @@ class crudFidel extends Command
         $data_to_write .= '    </div>'.PHP_EOL; 
         $data_to_write .= '   </div>'.PHP_EOL; 
         $data_to_write .= ' </div>'.PHP_EOL; 
-        $data_to_write .= '</div>'.PHP_EOL; 
         $data_to_write .= "@endsection".PHP_EOL;
         $data_to_write .= "@push('footer')".PHP_EOL; 
         $data_to_write .= "@endpush('footer')".PHP_EOL; 
@@ -226,14 +412,17 @@ class crudFidel extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /*************************** VISTA CREATE **************************************************/
-        $data_to_write = "@extends('layouts.app')".PHP_EOL;
+        $data_to_write = "@extends('layouts.dashboard')".PHP_EOL;
         $data_to_write .= "@section('content')".PHP_EOL;
-        $data_to_write .= '<div class="container">'.PHP_EOL; 
-        $data_to_write .= '  <div class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 sm:justify-center sm:pt-0">'.PHP_EOL;  
-        $data_to_write .= '    <div class="w-full px-16 py-20 mt-6 overflow-hidden bg-white rounded-lg lg:max-w-4xl">'.PHP_EOL; 
-        $data_to_write .= '        <div class="mb-4">'.PHP_EOL; 
-        $data_to_write .= '            <h1 class="font-serif text-3xl font-bold">Crear '.$model.'</h1>'.PHP_EOL; 
-        $data_to_write .= '        </div>'.PHP_EOL; 
+        $data_to_write .= '<div class="row column_title">'.PHP_EOL;
+        $data_to_write .= '   <div class="col-md-12">'.PHP_EOL;
+        $data_to_write .= '      <div class="page_title">'.PHP_EOL;
+        $data_to_write .= '        <h2>Crear '.$model.'</h2>'.PHP_EOL;
+        $data_to_write .= '      </div>'.PHP_EOL;
+        $data_to_write .= '   </div>'.PHP_EOL;
+        $data_to_write .= '</div>'.PHP_EOL;   
+        $data_to_write .= '<div class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 sm:justify-center sm:pt-0">'.PHP_EOL;  
+        $data_to_write .= '    <div class="w-full px-16 py-20 mt-6 overflow-hidden bg-white rounded-lg lg:max-w-4xl">'.PHP_EOL;  
         $data_to_write .= '  <div class="w-full px-6 py-4 bg-white rounded shadow-md ring-1 ring-gray-900/10">'.PHP_EOL; 
         $data_to_write .= '      <form method="POST" action="{{ route(\''.$tableName.'.store\') }}">'.PHP_EOL; 
         $data_to_write .= '        @csrf'.PHP_EOL; 
@@ -310,20 +499,23 @@ class crudFidel extends Command
         $data_to_write .= '            </form>'.PHP_EOL;  
         $data_to_write .= '        </div>'.PHP_EOL;  
         $data_to_write .= '    </div>'.PHP_EOL;  
-        $data_to_write .= '</div>'.PHP_EOL;  
-        $data_to_write .= '</div>'.PHP_EOL;  
+        $data_to_write .= '</div>'.PHP_EOL;   
+        $data_to_write .= "@endsection".PHP_EOL;
         $file_handle = fopen($ruta_views."create.blade.php", 'w'); 
         fwrite($file_handle, $data_to_write);
         fclose($file_handle); 
         /*************************** VISTA EDIT **************************************************/
-        $data_to_write = "@extends('layouts.app')".PHP_EOL;
+        $data_to_write = "@extends('layouts.dashboard')".PHP_EOL;
         $data_to_write .= "@section('content')".PHP_EOL;
-        $data_to_write .= '<div class="container">'.PHP_EOL; 
-        $data_to_write .= '  <div class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 sm:justify-center sm:pt-0">'.PHP_EOL;  
-        $data_to_write .= '    <div class="w-full px-16 py-20 mt-6 overflow-hidden bg-white rounded-lg lg:max-w-4xl">'.PHP_EOL; 
-        $data_to_write .= '        <div class="mb-4">'.PHP_EOL; 
-        $data_to_write .= '            <h1 class="font-serif text-3xl font-bold">Editar '.$model.'</h1>'.PHP_EOL; 
-        $data_to_write .= '        </div>'.PHP_EOL; 
+        $data_to_write .= '<div class="row column_title">'.PHP_EOL;
+        $data_to_write .= '   <div class="col-md-12">'.PHP_EOL;
+        $data_to_write .= '      <div class="page_title">'.PHP_EOL;
+        $data_to_write .= '        <h2>Editar '.$model.'</h2>'.PHP_EOL;
+        $data_to_write .= '      </div>'.PHP_EOL;
+        $data_to_write .= '   </div>'.PHP_EOL;
+        $data_to_write .= '</div>'.PHP_EOL;    
+        $data_to_write .= '<div class="flex flex-col items-center min-h-screen pt-6 bg-gray-100 sm:justify-center sm:pt-0">'.PHP_EOL;  
+        $data_to_write .= '    <div class="w-full px-16 py-20 mt-6 overflow-hidden bg-white rounded-lg lg:max-w-4xl">'.PHP_EOL;  
         $data_to_write .= '    <div class="w-full px-6 py-4 bg-white rounded shadow-md ring-1 ring-gray-900/10">'.PHP_EOL; 
         $data_to_write .= '      <form method="POST" action="{{ route(\''.$tableName.'.update\',$'.$model.'->id) }}">'.PHP_EOL; 
         $data_to_write .= '        @csrf'.PHP_EOL;  
@@ -401,20 +593,23 @@ class crudFidel extends Command
         $data_to_write .= '            </form>'.PHP_EOL;  
         $data_to_write .= '        </div>'.PHP_EOL;  
         $data_to_write .= '    </div>'.PHP_EOL;  
-        $data_to_write .= '</div>'.PHP_EOL;  
-        $data_to_write .= '</div>'.PHP_EOL;  
+        $data_to_write .= '</div>'.PHP_EOL;   
+        $data_to_write .= "@endsection".PHP_EOL;
         $file_handle = fopen($ruta_views."edit.blade.php", 'w'); 
         fwrite($file_handle, $data_to_write);
         fclose($file_handle); 
         /*************************** VISTA SHOW **************************************************/
-        $data_to_write = "@extends('layouts.app')".PHP_EOL;
+        $data_to_write = "@extends('layouts.dashboard')".PHP_EOL;
         $data_to_write .= "@section('content')".PHP_EOL;
-        $data_to_write .= '<div class="container">'.PHP_EOL; 
+        $data_to_write .= '<div class="row column_title">'.PHP_EOL;
+        $data_to_write .= '   <div class="col-md-12">'.PHP_EOL;
+        $data_to_write .= '      <div class="page_title">'.PHP_EOL;
+        $data_to_write .= '        <h2>Mostrar '.$model.'</h2>'.PHP_EOL;
+        $data_to_write .= '      </div>'.PHP_EOL;
+        $data_to_write .= '   </div>'.PHP_EOL;
+        $data_to_write .= '</div>'.PHP_EOL;   
         $data_to_write .= ' <div class="max-w-4xl mx-auto mt-8">'.PHP_EOL; 
-        $data_to_write .= '  <div class="mb-4">'.PHP_EOL; 
-        $data_to_write .= '    <h1 class="text-3xl font-bold">'.PHP_EOL; 
-        $data_to_write .= '        Mostrar '.$model.PHP_EOL; 
-        $data_to_write .= '    </h1>'.PHP_EOL; 
+        $data_to_write .= '  <div class="mb-4">'.PHP_EOL;  
         $data_to_write .= '    <div class="flex justify-end mt-5">'.PHP_EOL; 
         $data_to_write .= '        <a class="px-2 py-1 rounded-md bg-sky-500 text-sky-100 hover:bg-sky-600" href="{{ route(\''.$tableName.'.index\') }}">< Atrás</a>'.PHP_EOL; 
         $data_to_write .= '    </div>'.PHP_EOL; 
@@ -430,14 +625,20 @@ class crudFidel extends Command
         $data_to_write .= '</div>'.PHP_EOL;   
             }  
         }
-        $data_to_write .= '</div>'.PHP_EOL;   
+        $data_to_write .= "@endsection".PHP_EOL;
         $file_handle = fopen($ruta_views."show.blade.php", 'w'); 
         fwrite($file_handle, $data_to_write);
         fclose($file_handle); 
         /*********************DATE: YearRegister***********************************/
-        $data_to_write = "@extends('layouts.app')".PHP_EOL;
+        $data_to_write = "@extends('layouts.dashboard')".PHP_EOL;
         $data_to_write .= "@section('content')".PHP_EOL;
-        $data_to_write .= '<div class="container">'.PHP_EOL; 
+        $data_to_write .= '<div class="row column_title">'.PHP_EOL;
+        $data_to_write .= '   <div class="col-md-12">'.PHP_EOL;
+        $data_to_write .= '      <div class="page_title">'.PHP_EOL;
+        $data_to_write .= '        <h2>Mostrar '.$model.'</h2>'.PHP_EOL;
+        $data_to_write .= '      </div>'.PHP_EOL;
+        $data_to_write .= '   </div>'.PHP_EOL;
+        $data_to_write .= '</div>'.PHP_EOL;   
         $data_to_write .= ' <div class="max-w-4xl mx-auto mt-8">'.PHP_EOL; 
         $data_to_write .= '  <div class="mb-4">'.PHP_EOL; 
         $data_to_write .= '    <h1 class="text-3xl font-bold">'.PHP_EOL; 
@@ -452,8 +653,7 @@ class crudFidel extends Command
         $data_to_write .= '   <div class="col">'.PHP_EOL;  
         $data_to_write .= '     <canvas id="myChartLine" width="400px" height="100%"></canvas>'.PHP_EOL;  
         $data_to_write .= '   </div> '.PHP_EOL;  
-        $data_to_write .= ' </div>'.PHP_EOL;   
-        $data_to_write .= '</div>'.PHP_EOL;   
+        $data_to_write .= ' </div>'.PHP_EOL;      
         $data_to_write .= "@endsection".PHP_EOL;
         $data_to_write .= "@push('scripts')".PHP_EOL;  
         $data_to_write .= ' <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>'.PHP_EOL; 

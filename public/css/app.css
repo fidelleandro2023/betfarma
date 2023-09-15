@@ -1,3 +1,6 @@
+#auth_layout{
+    background-image: url(images/login.jpeg);
+}
 .link_card{
     cursor: pointer;
     color:#fff; text-decoration: none;

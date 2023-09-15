@@ -105,5 +105,28 @@
 @endsection
 @push('footer') 
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    <script type="text/javascript">
+    var path = "{{ route('sales.autocomplete.name') }}"; 
+    $( "#search" ).autocomplete({
+        source: function( request, response ) {
+          $.ajax({
+            url: path,
+            type: 'GET',
+            dataType: "json",
+            data: {
+               search: request.term
+            },
+            success: function( data ) {
+               response( data );
+            }
+          });
+        },
+        select: function (event, ui) {
+           $('#search').val(ui.item.label);
+           console.log(ui.item); 
+           return false;
+        }
+      }); 
+    </script>
     <script src="{{ asset('js/sales.js')}}"></script>
 @endpush('footer')

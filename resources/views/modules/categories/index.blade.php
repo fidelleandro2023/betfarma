@@ -1,6 +1,12 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 @section('content')
-<div class="container">
+<div class="row column_title">
+   <div class="col-md-12">
+      <div class="page_title">
+        <h2>Menú categories</h2>
+      </div>
+   </div>
+</div>
  <div class="row">
  <div class="col-4">
   <a href="{{ route('categories.list') }}" class="text-white link_card">
@@ -63,5 +69,4 @@
  </a>
  </div>
  </div>
-</div>
 @endsection

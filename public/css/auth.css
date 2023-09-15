@@ -1,0 +1,10 @@
+html,body,#app,main,.container{
+    height: 100%;
+}
+#auth_layout{
+    background-image: url(../images/login.jpeg);
+}
+
+#auth_layout input{
+    background: rgba(255, 255, 255, 0.48);
+}

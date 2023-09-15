@@ -1,6 +1,12 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 @section('content')
-<div class="container">
+<div class="row column_title">
+   <div class="col-md-12">
+      <div class="page_title">
+        <h2>Mostrar category</h2>
+      </div>
+   </div>
+</div>
  <div class="max-w-4xl mx-auto mt-8">
   <div class="mb-4">
     <h1 class="text-3xl font-bold">
@@ -16,7 +22,6 @@
      <canvas id="myChartLine" width="400px" height="100%"></canvas>
    </div> 
  </div>
-</div>
 @endsection
 @push('scripts')
  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.min.js"></script>
