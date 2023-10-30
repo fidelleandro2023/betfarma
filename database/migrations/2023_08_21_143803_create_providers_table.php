@@ -34,7 +34,7 @@ return new class extends Migration
             ->onDelete('cascade');
             $table->foreign('stakeholder')
             ->references('id')
-            ->on('people')
+            ->on('peoples')
             ->onDelete('cascade');
             $table->timestamps();
         });

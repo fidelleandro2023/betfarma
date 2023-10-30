@@ -17,9 +17,14 @@ return new class extends Migration
             $table->string("balance")->comment("Saldo de cuenta");
             $table->string("cardnumber")->comment("Numero de tarjeta");
             $table->bigInteger('user_id')->unsigned()->nullable()->comment("Usuario que creó la cuenta bancaria");
+            $table->bigInteger('bank_id')->unsigned();
             $table->foreign('user_id')
             ->references('id')
             ->on('users')
+            ->onDelete('cascade');
+            $table->foreign('bank_id')
+            ->references('id')
+            ->on('banks')
             ->onDelete('cascade');
             $table->timestamps();
         });

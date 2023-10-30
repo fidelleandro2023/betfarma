@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class province extends Model
+class department extends Model
 {
     use HasFactory;
     /**
@@ -22,7 +22,7 @@ class province extends Model
      *
      * @var string
      */
-    protected $table = 'provinces';
+    protected $table = 'departments';
 
     /**
      * Los atributos que son asignables en masa.
@@ -45,16 +45,13 @@ class province extends Model
     /**
      * @return mixed
      */
-    public function department()
+    public function country()
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(Country::class);
     }
 
     /**
      * @return mixed
      */
-    public function districts()
-    {
-        return $this->hasMany(District::class);
-    }
+    public function provinces(){}
 }

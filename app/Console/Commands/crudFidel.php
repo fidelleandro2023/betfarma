@@ -15,8 +15,8 @@ class crudFidel extends Command
      *
      * @var string
      */ 
-    //php artisan crud-fidel --controller=CategoryController --model=category --prefijo=modules
-    protected $signature = 'crud-fidel {--controller=} {--model=} {--prefijo=} {--auth=}';
+    //php artisan crud-fidel --controller=CategoryController --model=category --prefijo=modules --seed=4
+    protected $signature = 'crud-fidel {--controller=} {--model=} {--prefijo=} {--auth=} {--seed=}';
     /**
      * The console command description.
      *
@@ -35,6 +35,7 @@ class crudFidel extends Command
         $auth = $this->option('auth') == '' ? false : true;
         //$migration = $this->option('migration');
         $prefijo = $this->option('prefijo') == '' ? '' : $this->option('prefijo');  
+        $seed = $this->option('seed') == '' ? 0 : $this->option('seed');  
         /************ Comprobar si existe controllers, Model y migration *******************/
         if (!file_exists(base_path()."\app\Http\Controllers\\".$controller.".php")) {
             echo 'No existe el controlador'; exit;
@@ -45,23 +46,89 @@ class crudFidel extends Command
         /*if (!file_exists(base_path()."\database\migrations\\".$migration.".php")) {
             echo 'No existe la migración'; exit;
         }*/
-        /****CREANDO MIGRACIONES PARA ROLES, USERS Y PERMISOS********************* */
-        $rolperuse = array(0 => array('table' => 'roles',
-                                      'columns' => ''
+        /*************** CREANDO MIGRACIONES PARA ROLES, USERS, PERMISOS, PEOPLE, TYPE_DOC **************************************/
+        $rolperuse = array(0 => array('table' => 'document_types',
+                                      'columns' =>  '$table->string(\'name\')->comment("nombre corto");'.PHP_EOL.
+                                                    '$table->string(\'control\')->comment("Tipo de dato");'.PHP_EOL.
+                                                    '$table->string(\'description\')->comment("");'.PHP_EOL. 
+                                                    '$table->string(\'type\')->comment("");'.PHP_EOL. 
+                                                    '$table->string(\'max\')->nullable()->comment("Máximo de caracteres");'.PHP_EOL. 
+                                                    '$table->timestamps();'.PHP_EOL,
+                                       'insert' => "['name' => 'RUC','control' => 'number','description' => 'RUC','type' =>'6','max' =>11],".PHP_EOL,
+                                                   "['name' => 'DNI','control' => 'number','description' => 'DOCUMENTO NACIONAL DE IDENTIDAD (DNI)','type' =>'1','max' =>8],".PHP_EOL,
+                                                   "['name' => 'CARNET EXTRANJERÍA','control' => 'number','description' => 'CARNET DE EXTRANJERIA','type' =>'4','max' =>15],".PHP_EOL,
+                                                   "['name' => 'PASAPORTE','control' => 'number','description' => 'PASAPORTE','type' =>'7','max' =>15],".PHP_EOL,
+                                                   "['name' => 'CEDULA IDENTIDAD','control' => 'string','description' => 'CÉDULA DIPLOMÁTICA DE IDENTIDAD','type' =>'A','max' =>15],".PHP_EOL,
+                                                   "['name' => 'OTRO','control' => 'string','description' => 'OTRO','type' =>'0','max' =>15],".PHP_EOL
                                       ),
-                            1 => array('table' => 'permissions',
-                                        'columns' => ''
+                           1 => array('table' => 'peoples',
+                                      'columns' => '$table->string(\'name\')->comment("Nombres");'.PHP_EOL.
+                                                   '$table->string(\'lastname\')->comment("Apellidos");'.PHP_EOL.
+                                                   '$table->string(\'address\')->comment("Dirección");'.PHP_EOL.
+                                                   '$table->string(\'landline\')->nullable()->comment("Telefono fijo");'.PHP_EOL.
+                                                   '$table->string(\'birthdate\')->nullable()->comment("Fecha de nacimiento");'.PHP_EOL.
+                                                   '$table->char(\'gender\',1)->nullable()->comment("Fecha de nacimiento");'.PHP_EOL.
+                                                   '$table->string(\'main_phone\')->nullable()->comment("Telefono principal");'.PHP_EOL. 
+                                                   '$table->string(\'secondary_phone\')->nullable()->comment("telefono secundario");'.PHP_EOL. 
+                                                   '$table->bigInteger(\'document_types_id\')->unsigned()->comment("Tipo de documento");'.PHP_EOL.
+                                                   '$table->string(\'document_number\')->comment("numero de documento");'.PHP_EOL.
+                                                   '$table->char(\'status\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                                                   '$table->foreign(\'document_types_id\')'.PHP_EOL.
+                                                   '->references(\'id\')'.PHP_EOL.
+                                                   '->on(\'document_types\')'.PHP_EOL.
+                                                   '->onDelete(\'cascade\'); '.PHP_EOL.
+                                                   '$table->timestamps();'.PHP_EOL,
+                                        'insert' => ''            
                                       ),
-                            2 => array('table' => 'permission_roles',
-                                       'columns' => ''
+                           2 => array('table' => 'roles',
+                                      'columns' => '$table->string(\'name\')->comment("Nombre de rol");'.PHP_EOL.
+                                                   '$table->string(\'description\')->comment("Descripción de rol");'.PHP_EOL.
+                                                   '$table->char(\'status\',1)->default("A")->comment("A o I"); '.PHP_EOL,
+                                      'insert' => ''
+                                      ),                      
+                           3 => array('table' => 'permissions', 
+                                      'columns' => '$table->string(\'name\')->comment("Nombre de permiso");'.PHP_EOL.
+                                                   '$table->string(\'description\')->comment("Descripción de permiso");'.PHP_EOL.
+                                                   '$table->char(\'status\',1)->default("A")->comment("A o I"); '.PHP_EOL,
+                                      'insert' => ''
                                       ),
-                            3 => array('table' => 'user_roles',
-                                       'columns' => ''
-                                      )
-                            );
-        /***************ROLES *****************************************************/
+                           4 => array('table' => 'permission_roles',
+                                      'columns' => '$table->char(\'create\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                                                   '$table->char(\'read\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                                                   '$table->char(\'write\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                                                   '$table->char(\'delete\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                                                   '$table->char(\'append\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                                                   '$table->bigInteger(\'role_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
+                                                   '$table->bigInteger(\'permission_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
+                                                   '$table->foreign(\'role_id\')'.PHP_EOL.
+                                                   '->references(\'id\')'.PHP_EOL.
+                                                   '->on(\'roles\')'.PHP_EOL.
+                                                   '->onDelete(\'cascade\'); '.PHP_EOL.
+                                                   '$table->foreign(\'permission_id\')'.PHP_EOL.
+                                                   '->references(\'id\')'.PHP_EOL.
+                                                   '->on(\'permissions\')'.PHP_EOL.
+                                                   '->onDelete(\'cascade\'); '.PHP_EOL,
+                                      'insert' => ''
+                                     ),
+                           5 => array('table' => 'user_roles',
+                                      'columns' => '$table->bigInteger(\'user_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
+                                                   '$table->bigInteger(\'role_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
+                                                   '$table->foreign(\'user_id\')'.PHP_EOL.
+                                                   '->references(\'id\')'.PHP_EOL.
+                                                   '->on(\'users\')'.PHP_EOL.
+                                                   '->onDelete(\'cascade\'); '.PHP_EOL.
+                                                   '$table->foreign(\'role_id\')'.PHP_EOL.
+                                                   '->references(\'id\')'.PHP_EOL.
+                                                   '->on(\'roles\')'.PHP_EOL.
+                                                   '->onDelete(\'cascade\'); '.PHP_EOL,
+                                      'insert' => ''
+                                    )
+                          );
+        /*************** ROLES,permissions,permission_roles,user_roles,people,type_doc********************************************/
+        $i = 0;
         foreach ($rolperuse as $key => $row) {
-        $file_handle = fopen(base_path()."\database\migrations\\2014_10_12_000001_create_roles_table.php", 'w');
+        $i++;
+        $file_handle = fopen(base_path()."\database\migrations\\2014_10_12_00000".$i."_create_".$row['table']."_table.php", 'w');
         $data_to_write = '<?php'.PHP_EOL;
         $data_to_write .= ' use Illuminate\Database\Migrations\Migration;'.PHP_EOL;
         $data_to_write .= ' use Illuminate\Database\Schema\Blueprint;'.PHP_EOL;
@@ -75,8 +142,14 @@ class crudFidel extends Command
         $data_to_write .= '   {'.PHP_EOL;
         $data_to_write .= '      Schema::create(\''.$row['table'].'\', function (Blueprint $table) { '.PHP_EOL;
         $data_to_write .= '       $table->id();'.PHP_EOL;
-        $data_to_write .= '      '.$row['columns'].PHP_EOL; 
+        $data_to_write .= '      '.$row['columns']; 
         $data_to_write .= '      });'.PHP_EOL;
+        if ($row['insert'] != '') {
+            $data_to_write .= '   \App\Models\DocumentType::insert([';
+            $data_to_write .= '     '.$row['insert'];
+            $data_to_write .= '   ]);';
+        }
+        $data_to_write .= '';
         $data_to_write .= '   }'.PHP_EOL; 
         $data_to_write .= '   /**'.PHP_EOL;
         $data_to_write .= '   * Reverse the migrations.'.PHP_EOL;
@@ -89,7 +162,35 @@ class crudFidel extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         }
-        
+        /**********************************************************************************************************/
+        $rolperuse = array(0 => array('table' => 'document_type', 'column' => "'name','control','descripcion','max'"),
+                           1 => array('table' => 'people', 'column' => "'name','lastname','address','landline','birthdate,gender','main_phone','secondary_phone','document_types_id','document_number','status'"),
+                           2 => array('table' => 'role', 'column' => "'name','description','status'"),
+                           3 => array('table' => 'permission', 'column' => "'name','description','status'"),
+                           4 => array('table' => 'permission_role', 'column' => "'create','read','write','delete','append','role_id','permission_id'"),
+                           5 => array('table' => 'user_role', 'column' => "'user_id','role_id'"),
+                          );
+         
+        foreach ($rolperuse as $key => $row) { 
+        $file_handle = fopen(base_path()."\app\Models\\".$row['table'].".php", 'w');
+        $data_to_write = '<?php'.PHP_EOL; 
+        $data_to_write .= PHP_EOL; 
+        $data_to_write .= ' namespace App\Models;'.PHP_EOL; 
+        $data_to_write .= ' use App\Models\User;'.PHP_EOL; 
+        $data_to_write .= ' use Illuminate\Database\Eloquent\Factories\HasFactory;'.PHP_EOL; 
+        $data_to_write .= ' use Illuminate\Database\Eloquent\Model;'.PHP_EOL; 
+        $data_to_write .= PHP_EOL; 
+        $data_to_write .= ' class '.$row['table'].' extends Model'.PHP_EOL; 
+        $data_to_write .= ' {'.PHP_EOL; 
+        $data_to_write .= '     use HasFactory;'.PHP_EOL; 
+        $data_to_write .= PHP_EOL; 
+        $data_to_write .= '     protected $fillable = ['.PHP_EOL; 
+        $data_to_write .= "       ".$row['column'];
+        $data_to_write .= '     ];'.PHP_EOL; 
+        $data_to_write .= ' }'.PHP_EOL; 
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);
+        }
         /************ Cargando model de forma dinamica **********************/
         include(base_path().'\app\Models\\'.$model.'.php');
         $modelDB = \App::make('App\Models\\'.$model); 
@@ -178,6 +279,7 @@ class crudFidel extends Command
         $data_to_write .= '<link rel="stylesheet" href="{{ asset(\'css/dashboard/perfect-scrollbar.css\') }}" />'.PHP_EOL;  
         $data_to_write .= '<!-- custom css -->'.PHP_EOL;     
         $data_to_write .= '<link rel="stylesheet" href="{{ asset(\'css/dashboard/custom.css\') }}" />'.PHP_EOL;  
+        $data_to_write .= '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />'.PHP_EOL;  
         $data_to_write .= '<!--[if lt IE 9]>'.PHP_EOL;  
         $data_to_write .= '<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>'.PHP_EOL;  
         $data_to_write .= '<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>'.PHP_EOL;  
@@ -692,10 +794,26 @@ class crudFidel extends Command
         $file_handle = fopen($ruta_views."date_year_register.blade.php", 'w'); 
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
-        /********************************** CONSTRUYENDO LAS RUTAS *************************************/
-        $data_to_write = file_get_contents(base_path()."\\routes\\web.php"); 
-        $file_handle = fopen(base_path()."\\routes\\web.php", 'w');  
-        $data_to_write .= PHP_EOL;
+        /********************************** CONSTRUYENDO LAS RUTAS *****************************************/
+        $prefijo_routes = $prefijo == '' ? '' : $prefijo.'\\';
+        $data_route = 'require __DIR__'.".'\\$prefijo_routes$tableName.php';";
+        $file_route = base_path()."\\routes\\web.php";
+
+        if( strpos(file_get_contents($file_route),$data_route) !== false) {
+            file_put_contents($file_route, str_replace($data_route , $data_route, file_get_contents($file_route)));
+        }else {
+            file_put_contents($file_route,file_get_contents($file_route).PHP_EOL.PHP_EOL.$data_route);
+        }
+        
+        $subRoute = $prefijo_routes."$tableName.php"; 
+
+        if ($prefijo != '' && !file_exists(base_path().'\\routes\\'.$prefijo_routes)) {
+            mkdir(base_path().'\\routes\\'.$prefijo_routes, 0700);
+        }
+        
+        //$data_to_write = file_get_contents(base_path()."\\routes\\".$subRoute); 
+        $file_handle = fopen(base_path()."\\routes\\".$subRoute, 'w');  
+        $data_to_write = '<?php'.PHP_EOL;
         //Agregar autenticación a las rutas en caso se defina desde el comando
         $auth_b = $auth == true ? "->middleware(['auth']);" : "";
         $data_to_write .= "/********************** RUTAS DE $tableName *********************************************************"."/".PHP_EOL;
@@ -989,14 +1107,99 @@ class crudFidel extends Command
         $file_handle = fopen(base_path()."\\app\\Http\\Controllers\\$controller.php", 'w'); 
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);  
-        /*********EJECUTAR COMANDOS LARAVEL********+ */ 
+        /******************CREAR SEED*******************************************************/
+        if (0 < $seed) { 
+        $data_to_write = '<?php'.PHP_EOL; 
+        $data_to_write .= 'namespace Database\Seeders;'.PHP_EOL; 
+        $data_to_write .= 'use App\Models\\'.$model.';'.PHP_EOL; 
+        $data_to_write .= 'use Illuminate\Database\Seeder;'.PHP_EOL; 
+        $data_to_write .= 'use Illuminate\Support\Facades\DB;'.PHP_EOL.PHP_EOL; 
+        $data_to_write .= 'class '.$model.'TableSeeder extends Seeder'.PHP_EOL; 
+        $data_to_write .= '{'.PHP_EOL;     
+        $data_to_write .= '/**'.PHP_EOL; 
+        $data_to_write .= '* Seed the application\'s database.'.PHP_EOL; 
+        $data_to_write .= '*'.PHP_EOL; 
+        $data_to_write .= ' * @return void '.PHP_EOL; 
+        $data_to_write .= '*/'.PHP_EOL;  
+        $data_to_write .= ' public function run()'.PHP_EOL; 
+        $data_to_write .= ' {'.PHP_EOL; 
+        $data_to_write .= '    $current_time_Limit = ini_get(\'max_execution_time\');'.PHP_EOL;  
+        $data_to_write .= '    $current_memory_Limit = ini_get(\'memory_limit\');'.PHP_EOL; 
+        $data_to_write .= '    set_time_limit(300);'.PHP_EOL; 
+        $data_to_write .= '    ini_set(\'memory_limit\', \'2024M\');'.PHP_EOL.PHP_EOL;  
+        $data_to_write .= '    $'.$model.' = ['.PHP_EOL; 
+        $j = 0;
+        for ($i_seed = 0; $i_seed < $seed ;$i_seed++) {
+            $i = 0;
+            if ($j != 0) {
+                $data_to_write .= ','.PHP_EOL;
+            }
+            $j++;
+            $data_to_write .= '                   ['.PHP_EOL; ;  
+            foreach ($columns as $key => $value) {
+                /******* Ignorar las columnas id, created_at y updated_at **********************/
+                if (strtolower($value->Field) !== "id" && $value->Field !== "created_at" && $value->Field !== "updated_at") {
+                    if ($i != 0) {
+                        $data_to_write .= ','.PHP_EOL;
+                    }
+                    $i++;
+                     
+                    $data_to_write .= "                      '".$value->Field.'\' => ';  
+
+                    if (strpos('bigint unsigned', $value->Type)  === true && strpos('bigint', $value->Type)  === true) {
+                        $data_to_write .= 'NULL';
+                    }else{
+                            switch (strtolower($value->Type)) { 
+                                case 'int': $data_to_write .= mt_rand(0, 1000); break;
+                                case 'text': $data_to_write .= lorem(round(rand(3,10))); break;
+                                case 'varchar': $data_to_write .= lorem(round(rand(1,5))); break;
+                                case 'float': $data_to_write .= rand(0, 10) / 10; break;
+                                case 'double': $data_to_write .= $this->mt_random_double(0,100); break;
+                                case 'date': $data_to_write .= date("Y-m-d", mt_rand(100, 500000)); break;
+                                case 'timestamp': $data_to_write .= date("Y-m-d", mt_rand(200, 500000)); break;
+                                default: $data_to_write .= ' NULL';break;
+                            } 
+                    }  
+                    
+                }
+            } 
+            $data_to_write .= PHP_EOL.'                   ]';   
+        }
+        
+        $data_to_write .= PHP_EOL.'                ];'.PHP_EOL.PHP_EOL; 
+        $num_max_fetch =  $seed < 100 ? $seed : 100;
+
+        $data_to_write .= '    $batchSize = '.$num_max_fetch.'; '.PHP_EOL.PHP_EOL; 
+        $data_to_write .= '    foreach (array_chunk($'.$model.', $batchSize) as $batch) {'.PHP_EOL;  
+        $data_to_write .= '      DB::beginTransaction();'.PHP_EOL;  
+        $data_to_write .= '      try {'.PHP_EOL;  
+        $data_to_write .= '             foreach ($batch as $'.$model.'Data) {'.PHP_EOL;  
+        $data_to_write .= '               $'.$model.'->fill($'.$model.'Data);'.PHP_EOL;  
+        $data_to_write .= '               $'.$model.'->save();'.PHP_EOL;  
+        $data_to_write .= '             }'.PHP_EOL; 
+        $data_to_write .= '             DB::commit();'.PHP_EOL;  
+        $data_to_write .= '          } catch (\Exception $e) {'.PHP_EOL;   
+        $data_to_write .= '             DB::rollBack();'.PHP_EOL; 
+        $data_to_write .= '             $this->command->error(\'Error during seeder execution: \' . $e->getMessage());'.PHP_EOL;  
+        $data_to_write .= '          }'.PHP_EOL; 
+        $data_to_write .= '    }'.PHP_EOL.PHP_EOL;  
+        $data_to_write .= '    ini_set(\'memory_limit\', $current_memory_Limit);'.PHP_EOL; 
+        $data_to_write .= '    set_time_limit($current_time_Limit);'.PHP_EOL; 
+        $data_to_write .= '    $this->command->info(\'Users table seeding completed successfully.\');'.PHP_EOL.PHP_EOL; 
+        $data_to_write .= ' }'.PHP_EOL;  
+        $data_to_write .= '}'.PHP_EOL; 
+        $file_handle = fopen(base_path()."\\database\\seeders\\".$model."TableSeeder.php", 'w'); 
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);  
+        } 
+        /**************EJECUTAR COMANDOS LARAVEL*****************************/ 
         $result = Process::run('php artisan route:cache');
         $result = Process::run('php artisan cache:clear');
         echo 'Crud construido con éxito!!! (Rutas, Solicitud,Controller, Model.)';
         //echo $controller,' ->'.$migration." \n";
         //Obteniendo datos de migrations
         //echo "database/migrations/".$migration.'.php ';
-        /*********************************************************/
+        /********************************************************************/
         //Mejorando el modelo 
         //require ($base_model.$model.'.php');
         //include(base_path().'\app\Models\\'.$model.'.php');
@@ -1013,5 +1216,10 @@ class crudFidel extends Command
         //Creando vistas (blade)
 
         /*****************************************/
+    }
+    function mt_random_double($min, $max) {
+        $float_part = mt_rand(0, mt_getrandmax())/mt_getrandmax();
+        $integer_part = mt_rand($min, $max - 1);
+        return $integer_part + $float_part;
     }
 }
