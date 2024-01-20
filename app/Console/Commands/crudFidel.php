@@ -2,11 +2,13 @@
 
 namespace App\Console\Commands;
 use Illuminate\Support\Str;
-use Illuminate\Console\Command;
-use App\Models\category; 
+use Illuminate\Console\Command; 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Process;
 //use App\Helpers\loadModels;
+use App\Http\Kernel;
+use Illuminate\Http\Request;
+use FrontendAssets;
 
 class crudFidel extends Command
 {
@@ -28,6 +30,29 @@ class crudFidel extends Command
      */
     public function handle()
     { 
+        /***************** INSTALL SPATIE ***********************/ 
+        set_time_limit(0);  
+        // print_r($loader); exit;
+        // $ruta_kernel = base_path()."\app\Http\Kernel.php";
+        // $kernel = Kernel::class;
+        // //print_r(method_exists('kernel::class','getMiddlewareAliases').'-'); exit;
+        // if(method_exists('kernel::class','getMiddlewareAliases') == false){
+        //     $file = base_path()."\app\Http\Kernel.php";
+        //     $fh = fopen($file, 'r+') or die("can't open file");
+        //     $stat = fstat($fh);
+        //     ftruncate($fh, $stat['size']-1);
+        //     fclose($fh); 
+        //     $metodo = 'public function getMiddlewareAliases(){'.PHP_EOL.' return $this->middlewareAliases;'.PHP_EOL.'}'.PHP_EOL;
+        //     file_put_contents($file, file_get_contents($file).PHP_EOL.$metodo.PHP_EOL.'}');
+        // }
+        // print_r($kernel->getMiddlewareAliases()); exit;
+        Process::run('composer require laravel/breeze --dev');
+        Process::run('php artisan breeze:install');
+        Process::run('composer update spatie/laravel-permission');
+             /****PUBLICAR EN EL VENDOR ****/
+        Process::run('php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"');
+            /****Agregar en el http/kernel.php ****/ 
+        /******************************************************************/
         //$controller = $this->argument('controller'); //$this->option('controller');
         $databaseName = \DB::connection()->getDatabaseName();
         $controller = $this->option('controller');
@@ -46,6 +71,49 @@ class crudFidel extends Command
         /*if (!file_exists(base_path()."\database\migrations\\".$migration.".php")) {
             echo 'No existe la migración'; exit;
         }*/
+        /************* CREANDO USER AND ROLES ****************/
+        $data_to_write = '<?php'.PHP_EOL;
+        $data_to_write .= '  namespace App\Models;'.PHP_EOL;
+        $data_to_write .= '  use Illuminate\Database\Eloquent\Factories\HasFactory;'.PHP_EOL;
+        $data_to_write .= '  use Illuminate\Foundation\Auth\User as Authenticatable;'.PHP_EOL;
+        $data_to_write .= '  use Illuminate\Notifications\Notifiable;'.PHP_EOL;
+        $data_to_write .= '  use Laravel\Sanctum\HasApiTokens;'.PHP_EOL;
+        $data_to_write .= '  use Spatie\Permission\Traits\HasRoles;'.PHP_EOL;
+        $data_to_write .= ''.PHP_EOL;
+        $data_to_write .= 'class User extends Authenticatable'.PHP_EOL;
+        $data_to_write .= '{'.PHP_EOL;
+        $data_to_write .= '    use HasApiTokens, HasFactory, Notifiable;'.PHP_EOL;
+        $data_to_write .= '    /**'.PHP_EOL;
+        $data_to_write .= '    * The attributes that are mass assignable.'.PHP_EOL;
+        $data_to_write .= '    *'.PHP_EOL;
+        $data_to_write .= '    * @var array<int, string>'.PHP_EOL;
+        $data_to_write .= '    */'.PHP_EOL;
+        $data_to_write .= '    protected $fillable = ['.PHP_EOL;
+        $data_to_write .= "      'name',".PHP_EOL;
+        $data_to_write .= "      'email',".PHP_EOL;
+        $data_to_write .= "      'password',".PHP_EOL;
+        $data_to_write .= '    ];'.PHP_EOL.PHP_EOL; 
+        $data_to_write .= '/**'.PHP_EOL.PHP_EOL;
+        $data_to_write .= '* The attributes that should be hidden for serialization.'.PHP_EOL;
+        $data_to_write .= '*'.PHP_EOL;;
+        $data_to_write .= '* @var array<int, string>'.PHP_EOL;
+        $data_to_write .= '*/'.PHP_EOL;
+        $data_to_write .= '  protected $hidden = ['.PHP_EOL;;
+        $data_to_write .= "   'password',".PHP_EOL;
+        $data_to_write .= "   'remember_token',".PHP_EOL;
+        $data_to_write .= '  ];'.PHP_EOL;
+        $data_to_write .= ''.PHP_EOL;    
+        $data_to_write .= '/**'.PHP_EOL;
+        $data_to_write .= '* The attributes that should be cast.'.PHP_EOL;
+        $data_to_write .= '*'.PHP_EOL;
+        $data_to_write .= '* @var array<string, string>'.PHP_EOL;
+        $data_to_write .= '*/'.PHP_EOL;
+        $data_to_write .= '  protected $casts = ['.PHP_EOL;
+        $data_to_write .= "    'email_verified_at' => 'datetime',".PHP_EOL;
+        $data_to_write .= "    'password' => 'hashed',".PHP_EOL;
+        $data_to_write .= '  ];'.PHP_EOL;
+        $data_to_write .= '}'.PHP_EOL;
+        /**************************************************************/
         /*************** CREANDO MIGRACIONES PARA ROLES, USERS, PERMISOS, PEOPLE, TYPE_DOC **************************************/
         $rolperuse = array(0 => array('table' => 'document_types',
                                       'columns' =>  '$table->string(\'name\')->comment("nombre corto");'.PHP_EOL.
@@ -80,49 +148,49 @@ class crudFidel extends Command
                                                    '$table->timestamps();'.PHP_EOL,
                                         'insert' => ''            
                                       ),
-                           2 => array('table' => 'roles',
-                                      'columns' => '$table->string(\'name\')->comment("Nombre de rol");'.PHP_EOL.
-                                                   '$table->string(\'description\')->comment("Descripción de rol");'.PHP_EOL.
-                                                   '$table->char(\'status\',1)->default("A")->comment("A o I"); '.PHP_EOL,
-                                      'insert' => ''
-                                      ),                      
-                           3 => array('table' => 'permissions', 
-                                      'columns' => '$table->string(\'name\')->comment("Nombre de permiso");'.PHP_EOL.
-                                                   '$table->string(\'description\')->comment("Descripción de permiso");'.PHP_EOL.
-                                                   '$table->char(\'status\',1)->default("A")->comment("A o I"); '.PHP_EOL,
-                                      'insert' => ''
-                                      ),
-                           4 => array('table' => 'permission_roles',
-                                      'columns' => '$table->char(\'create\',1)->default("A")->comment("A o I"); '.PHP_EOL.
-                                                   '$table->char(\'read\',1)->default("A")->comment("A o I"); '.PHP_EOL.
-                                                   '$table->char(\'write\',1)->default("A")->comment("A o I"); '.PHP_EOL.
-                                                   '$table->char(\'delete\',1)->default("A")->comment("A o I"); '.PHP_EOL.
-                                                   '$table->char(\'append\',1)->default("A")->comment("A o I"); '.PHP_EOL.
-                                                   '$table->bigInteger(\'role_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
-                                                   '$table->bigInteger(\'permission_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
-                                                   '$table->foreign(\'role_id\')'.PHP_EOL.
-                                                   '->references(\'id\')'.PHP_EOL.
-                                                   '->on(\'roles\')'.PHP_EOL.
-                                                   '->onDelete(\'cascade\'); '.PHP_EOL.
-                                                   '$table->foreign(\'permission_id\')'.PHP_EOL.
-                                                   '->references(\'id\')'.PHP_EOL.
-                                                   '->on(\'permissions\')'.PHP_EOL.
-                                                   '->onDelete(\'cascade\'); '.PHP_EOL,
-                                      'insert' => ''
-                                     ),
-                           5 => array('table' => 'user_roles',
-                                      'columns' => '$table->bigInteger(\'user_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
-                                                   '$table->bigInteger(\'role_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
-                                                   '$table->foreign(\'user_id\')'.PHP_EOL.
-                                                   '->references(\'id\')'.PHP_EOL.
-                                                   '->on(\'users\')'.PHP_EOL.
-                                                   '->onDelete(\'cascade\'); '.PHP_EOL.
-                                                   '$table->foreign(\'role_id\')'.PHP_EOL.
-                                                   '->references(\'id\')'.PHP_EOL.
-                                                   '->on(\'roles\')'.PHP_EOL.
-                                                   '->onDelete(\'cascade\'); '.PHP_EOL,
-                                      'insert' => ''
-                                    )
+                        //    2 => array('table' => 'roles',
+                        //               'columns' => '$table->string(\'name\')->comment("Nombre de rol");'.PHP_EOL.
+                        //                            '$table->string(\'description\')->comment("Descripción de rol");'.PHP_EOL.
+                        //                            '$table->char(\'status\',1)->default("A")->comment("A o I"); '.PHP_EOL,
+                        //               'insert' => ''
+                        //               ),                      
+                        //    3 => array('table' => 'permissions', 
+                        //               'columns' => '$table->string(\'name\')->comment("Nombre de permiso");'.PHP_EOL.
+                        //                            '$table->string(\'description\')->comment("Descripción de permiso");'.PHP_EOL.
+                        //                            '$table->char(\'status\',1)->default("A")->comment("A o I"); '.PHP_EOL,
+                        //               'insert' => ''
+                        //               ),
+                        //    4 => array('table' => 'permission_roles',
+                        //               'columns' => '$table->char(\'create\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                        //                            '$table->char(\'read\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                        //                            '$table->char(\'write\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                        //                            '$table->char(\'delete\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                        //                            '$table->char(\'append\',1)->default("A")->comment("A o I"); '.PHP_EOL.
+                        //                            '$table->bigInteger(\'role_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
+                        //                            '$table->bigInteger(\'permission_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
+                        //                            '$table->foreign(\'role_id\')'.PHP_EOL.
+                        //                            '->references(\'id\')'.PHP_EOL.
+                        //                            '->on(\'roles\')'.PHP_EOL.
+                        //                            '->onDelete(\'cascade\'); '.PHP_EOL.
+                        //                            '$table->foreign(\'permission_id\')'.PHP_EOL.
+                        //                            '->references(\'id\')'.PHP_EOL.
+                        //                            '->on(\'permissions\')'.PHP_EOL.
+                        //                            '->onDelete(\'cascade\'); '.PHP_EOL,
+                        //               'insert' => ''
+                        //              ),
+                        //    5 => array('table' => 'user_roles',
+                        //               'columns' => '$table->bigInteger(\'user_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
+                        //                            '$table->bigInteger(\'role_id\')->unsigned()->comment("A o I"); '.PHP_EOL.
+                        //                            '$table->foreign(\'user_id\')'.PHP_EOL.
+                        //                            '->references(\'id\')'.PHP_EOL.
+                        //                            '->on(\'users\')'.PHP_EOL.
+                        //                            '->onDelete(\'cascade\'); '.PHP_EOL.
+                        //                            '$table->foreign(\'role_id\')'.PHP_EOL.
+                        //                            '->references(\'id\')'.PHP_EOL.
+                        //                            '->on(\'roles\')'.PHP_EOL.
+                        //                            '->onDelete(\'cascade\'); '.PHP_EOL,
+                        //               'insert' => ''
+                        //             )
                           );
         /*************** ROLES,permissions,permission_roles,user_roles,people,type_doc********************************************/
         $i = 0;
@@ -165,10 +233,10 @@ class crudFidel extends Command
         /**********************************************************************************************************/
         $rolperuse = array(0 => array('table' => 'document_type', 'column' => "'name','control','descripcion','max'"),
                            1 => array('table' => 'people', 'column' => "'name','lastname','address','landline','birthdate,gender','main_phone','secondary_phone','document_types_id','document_number','status'"),
-                           2 => array('table' => 'role', 'column' => "'name','description','status'"),
-                           3 => array('table' => 'permission', 'column' => "'name','description','status'"),
-                           4 => array('table' => 'permission_role', 'column' => "'create','read','write','delete','append','role_id','permission_id'"),
-                           5 => array('table' => 'user_role', 'column' => "'user_id','role_id'"),
+                        //    2 => array('table' => 'role', 'column' => "'name','description','status'"),
+                        //    3 => array('table' => 'permission', 'column' => "'name','description','status'"),
+                        //    4 => array('table' => 'permission_role', 'column' => "'create','read','write','delete','append','role_id','permission_id'"),
+                        //    5 => array('table' => 'user_role', 'column' => "'user_id','role_id'"),
                           );
          
         foreach ($rolperuse as $key => $row) { 
@@ -1222,4 +1290,9 @@ class crudFidel extends Command
         $integer_part = mt_rand($min, $max - 1);
         return $integer_part + $float_part;
     }
+    function getProtectedMember($class_object,$protected_member) {
+        $array = (array)$class_object;      //Object typecast into (associative) array
+        $prefix = chr(0).'*'.chr(0);           //Prefix which is prefixed to protected member
+        return $array[$prefix.$protected_member];
+   }
 }
