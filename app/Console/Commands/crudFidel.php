@@ -10,7 +10,7 @@ use App\Http\Kernel;
 use Illuminate\Http\Request;
 use FrontendAssets;
 
-class crudFidel extends Command
+class crudFidel extends AuthCrudFidel
 {
     /**
      * The name and signature of the console command.
@@ -72,6 +72,7 @@ class crudFidel extends Command
             echo 'No existe la migración'; exit;
         }*/
         /************* CREANDO USER AND ROLES STATIC****************/
+        $file_handle = fopen(base_path()."\app\Models\\User.php", 'w');
         $data_to_write = '<?php'.PHP_EOL;
         $data_to_write .= '  namespace App\Models;'.PHP_EOL;
         $data_to_write .= '  use Illuminate\Database\Eloquent\Factories\HasFactory;'.PHP_EOL;
@@ -116,7 +117,8 @@ class crudFidel extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /************** CONTROLLER ROL ****************/
-        $data_to_write .= '<?php'.PHP_EOL.PHP_EOL; 
+        $file_handle = fopen(base_path()."\app\Http\Controllers\\RoleController.php", 'w');
+        $data_to_write = '<?php'.PHP_EOL.PHP_EOL; 
         $data_to_write .= 'namespace App\Http\Controllers;'.PHP_EOL.PHP_EOL; 
         $data_to_write .= 'use Illuminate\Http\Request;'.PHP_EOL;
         $data_to_write .= 'use App\Http\Controllers\Controller;'.PHP_EOL;
@@ -193,7 +195,8 @@ class crudFidel extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /************ Cargando el controller de user *****************/
-        $data_to_write .= '<?php'.PHP_EOL.PHP_EOL; 
+        $file_handle = fopen(base_path()."\app\Http\Controllers\\UserController.php", 'w');
+        $data_to_write = '<?php'.PHP_EOL.PHP_EOL; 
         $data_to_write .= 'namespace App\Http\Controllers;'.PHP_EOL.PHP_EOL; 
         $data_to_write .= 'use Illuminate\Http\Request;'.PHP_EOL;
         $data_to_write .= 'use App\Http\Controllers\Controller;'.PHP_EOL;
@@ -206,13 +209,13 @@ class crudFidel extends Command
         $data_to_write .= '{'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '  public function index(Request $request)'.PHP_EOL;
         $data_to_write .= '  {'.PHP_EOL;
-        $data_to_write .= '   $data = User::latest()->paginate(5);'.PHP_EOL;
-        $data_to_write .= "   return view('users.index',compact('data'));".PHP_EOL;
-        $data_to_write .= '}'.PHP_EOL.PHP_EOL; 
+        $data_to_write .= '     $data = User::latest()->paginate(5);'.PHP_EOL;
+        $data_to_write .= "     return view('users.index',compact('data'));".PHP_EOL;
+        $data_to_write .= '  }'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '  public function create()'.PHP_EOL;
         $data_to_write .= '  {'.PHP_EOL;
-        $data_to_write .= '      $roles = Role::pluck(\'name\',\'name\')->all();'.PHP_EOL;
-        $data_to_write .= "      return view('users.create',compact('roles'));".PHP_EOL;
+        $data_to_write .= '     $roles = Role::pluck(\'name\',\'name\')->all();'.PHP_EOL;
+        $data_to_write .= "     return view('users.create',compact('roles'));".PHP_EOL;
         $data_to_write .= "  }".PHP_EOL.PHP_EOL;
         $data_to_write .= '  public function store(Request $request)'.PHP_EOL;
         $data_to_write .= "  {".PHP_EOL;
@@ -228,7 +231,7 @@ class crudFidel extends Command
         $data_to_write .= '     $user->assignRole($request->input(\'roles\'));'.PHP_EOL;
         $data_to_write .= "     return redirect()->route('users.index')".PHP_EOL;
         $data_to_write .= "                      ->with('success','User created successfully');".PHP_EOL;
-        $data_to_write .= "    }".PHP_EOL.PHP_EOL; 
+        $data_to_write .= " }".PHP_EOL.PHP_EOL; 
         $data_to_write .= ' public function show($id)'.PHP_EOL;
         $data_to_write .= ' {'.PHP_EOL; 
         $data_to_write .= '     $user = User::find($id);'.PHP_EOL;
