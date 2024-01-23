@@ -1,8 +1,50 @@
 <?php
 namespace App\Console\Commands;
-class AuthCrudFidel extends Command
+use Illuminate\Console\Command; 
+use Illuminate\Support\Facades\Process;
+
+class AuthCrudFidel
 {
-    function generateAuthBase(){
+    public function generateAuthBase(){
+        /***************************************************/
+        $file = base_path()."\app\Http\Kernel.php";
+        header('Content-Type: text/plain');
+        $contents = file_get_contents($file);
+        $class = eval("return $contents");
+        print_r($class);
+        exit;
+        /**************************************************/
+        $file = base_path()."\composer.json";
+        header('Content-Type: text/plain');
+        $contents = file_get_contents($file);
+        $searchfor = 'spatie/laravel-permission';
+        $pattern = preg_quote($searchfor, '/');
+        $pattern = "/^.*$pattern.*\$/m";
+        if (!preg_match_all($pattern, $contents, $matches))
+        {
+            Process::run('composer update spatie/laravel-permission');
+            $file = base_path()."\app\Http\.json";
+            header('Content-Type: text/plain');
+            $contents = file_get_contents($file);
+            $searchfor = 'spatie/laravel-permission';
+            $pattern = preg_quote($searchfor, '/');
+            $pattern = "/^.*$pattern.*\$/m";
+            if (!preg_match_all($pattern, $contents, $matches))
+            {
+
+            }
+        } 
+        $searchfor = 'laravel/breeze';
+        $pattern = preg_quote($searchfor, '/');
+        $pattern = "/^.*$pattern.*\$/m";
+        if (!preg_match_all($pattern, $contents, $matches))
+        {
+            Process::run('composer require laravel/breeze --dev'); 
+            Process::run('php artisan breeze:install');
+        }  
+        /**************** PUBLICAR EN EL VENDOR ****************************/
+        Process::run('php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"');
+
         $file_handle = fopen(base_path()."\app\Models\\User.php", 'w');
         $data_to_write = '<?php'.PHP_EOL;
         $data_to_write .= '  namespace App\Models;'.PHP_EOL;
@@ -125,5 +167,8 @@ class AuthCrudFidel extends Command
         $data_to_write .= '}'.PHP_EOL;
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
+        /************** BLADE ****************/
+
+        /*************************************/
     }
 }
