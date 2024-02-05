@@ -3,9 +3,32 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command; 
 use Illuminate\Support\Facades\Process;
 
-class AuthCrudFidel
+class AuthCrud extends Command
 {
-    public function generateAuthBase(){ 
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */ 
+    //php artisan crud-fidel --controller=CategoryController --model=category --prefijo=modules --seed=4
+    protected $signature = 'AuthCrud {--user=} {--email=} {--password=} {--auth=} {--seed=}';
+    /**
+     * 
+     * 
+     * 
+     * 
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Este comando crea un crud a partir del controller y model';
+    /**
+     * Execute the console command.
+     */
+    public function handle(){ 
+        $userAdmin = $this->option('user');
+        $emailAdmin = $this->option('email');
+        $passwordAdmin = $this->option('password');
         $file = base_path()."\composer.json";
         header('Content-Type: text/plain');
         $contents = file_get_contents($file);
@@ -275,10 +298,11 @@ class AuthCrudFidel
         $data_to_write .= '            Permission::create([\'name\' => $permission]);'.PHP_EOL;
         $data_to_write .= '    }'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '        // Create admin User and assign the role to him.'.PHP_EOL;
-        $data_to_write .= '        $user = User::create(['.PHP_EOL;
-        $data_to_write .= "            'name' => 'Prevail Ejimadu',".PHP_EOL;
-        $data_to_write .= "            'email' => 'test@example.com',".PHP_EOL;
-        $data_to_write .= "            'password' => Hash::make('password')".PHP_EOL;
+        $data_to_write .= '        $user = User::create(['.PHP_EOL;  
+        
+        $data_to_write .= "            'name' => '$userAdmin',".PHP_EOL;
+        $data_to_write .= "            'email' => '$emailAdmin',".PHP_EOL;
+        $data_to_write .= "            'password' => Hash::make('$passwordAdmin')".PHP_EOL;
         $data_to_write .= "        ]);".PHP_EOL.PHP_EOL; 
         $data_to_write .= '        $role = Role::create([\'name\' => \'Admin\']);'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '        $permissions = Permission::pluck(\'id\', \'id\')->all();'.PHP_EOL.PHP_EOL; 
