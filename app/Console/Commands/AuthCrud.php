@@ -61,7 +61,7 @@ class AuthCrud extends Command
             /**************************************************************************** */
         }  
        
-        $file_handle = fopen(base_path()."\database\migrations\\2014_10_12_000000_users_table.php", 'w');
+        $file_handle = fopen(base_path()."\database\migrations\\2014_10_12_000000_create_users_table.php", 'w');
         $data_to_write = '<?php'.PHP_EOL; 
         $data_to_write .= 'use Illuminate\Database\Migrations\Migration;'.PHP_EOL;
         $data_to_write .= 'use Illuminate\Database\Schema\Blueprint;'.PHP_EOL;
@@ -76,6 +76,7 @@ class AuthCrud extends Command
         $data_to_write .= '    Schema::create(\'users\', function (Blueprint $table) {'.PHP_EOL;
         $data_to_write .= '       $table->id();'.PHP_EOL;   
         $data_to_write .= '       $table->string(\'name\');'.PHP_EOL;       
+        $data_to_write .= '       $table->string(\'username\')->unique();'.PHP_EOL; 
         $data_to_write .= '       $table->string(\'email\')->unique();'.PHP_EOL;    
         $data_to_write .= '       $table->timestamp(\'email_verified_at\')->nullable();'.PHP_EOL;   
         $data_to_write .= '       $table->string(\'password\');'.PHP_EOL;  
@@ -877,7 +878,7 @@ class AuthCrud extends Command
             file_put_contents($file_route,file_get_contents($file_route).PHP_EOL.PHP_EOL.$data_route);
         }
         /*************************************************************************************************/
-        $file_handle = fopen(base_path()."\\database\\seeders\\RoleSeeder.php", 'w'); 
+        $file_handle = fopen(base_path()."\\database\\seeders\\DatabaseSeeder.php", 'w'); 
         $data_to_write = '<?php'.PHP_EOL.PHP_EOL; 
         $data_to_write .= 'namespace Database\Seeders;'.PHP_EOL;  
         $data_to_write .= '// use Illuminate\Database\Console\Seeds\WithoutModelEvents;'.PHP_EOL;
@@ -899,6 +900,7 @@ class AuthCrud extends Command
         /*********************** construir sql ***********************************/
         $result = Process::run('php artisan route:cache');
         $result = Process::run('php artisan cache:clear');
+        $result = Process::run('php artisan db:wipe');
         $result = Process::run('php artisan migrate:fresh --seed');
         /*************************************************************************/
         echo 'Autenticaciòn del sistema construido con éxito!!! (Rutas, Solicitud,Controller, Model.)';
