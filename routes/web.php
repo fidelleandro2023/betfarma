@@ -29,3 +29,5 @@ Route::get('/clear-cache-all', function() {
     dd("Cache Clear All");
 });      
 require __DIR__.'\modules\categories.php';
+
+require __DIR__.'\auth_users.php';

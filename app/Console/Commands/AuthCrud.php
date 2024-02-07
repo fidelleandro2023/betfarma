@@ -10,7 +10,7 @@ class AuthCrud extends Command
      *
      * @var string
      */ 
-    //php artisan crud-fidel --controller=CategoryController --model=category --prefijo=modules --seed=4
+    //php artisan AuthCrud --user=admin --email=admin@email.com --password=1234 --seed=4
     protected $signature = 'AuthCrud {--user=} {--email=} {--password=} {--auth=} {--seed=}';
     /**
      * 
@@ -61,6 +61,38 @@ class AuthCrud extends Command
             /**************************************************************************** */
         }  
        
+        $file_handle = fopen(base_path()."\database\migrations\\2014_10_12_000000_users_table.php", 'w');
+        $data_to_write = '<?php'.PHP_EOL; 
+        $data_to_write .= 'use Illuminate\Database\Migrations\Migration;'.PHP_EOL;
+        $data_to_write .= 'use Illuminate\Database\Schema\Blueprint;'.PHP_EOL;
+        $data_to_write .= 'use Illuminate\Support\Facades\Schema;'.PHP_EOL.PHP_EOL;
+        $data_to_write .= 'return new class extends Migration'.PHP_EOL;
+        $data_to_write .= '{'.PHP_EOL;
+        $data_to_write .= '/**'.PHP_EOL;
+        $data_to_write .= '* Run the migrations.'.PHP_EOL;
+        $data_to_write .= '*/'.PHP_EOL;
+        $data_to_write .= ' public function up(): void'.PHP_EOL;
+        $data_to_write .= ' {'.PHP_EOL;
+        $data_to_write .= '    Schema::create(\'users\', function (Blueprint $table) {'.PHP_EOL;
+        $data_to_write .= '       $table->id();'.PHP_EOL;   
+        $data_to_write .= '       $table->string(\'name\');'.PHP_EOL;       
+        $data_to_write .= '       $table->string(\'email\')->unique();'.PHP_EOL;    
+        $data_to_write .= '       $table->timestamp(\'email_verified_at\')->nullable();'.PHP_EOL;   
+        $data_to_write .= '       $table->string(\'password\');'.PHP_EOL;  
+        $data_to_write .= '       $table->rememberToken();'.PHP_EOL;
+        $data_to_write .= '       $table->timestamps();'.PHP_EOL;
+        $data_to_write .= '    });'.PHP_EOL;
+        $data_to_write .= ' }'.PHP_EOL;
+        $data_to_write .= '/**'.PHP_EOL;
+        $data_to_write .= '* Reverse the migrations.'.PHP_EOL; 
+        $data_to_write .= '*/'.PHP_EOL; 
+        $data_to_write .= ' public function down(): void'.PHP_EOL; 
+        $data_to_write .= ' {'.PHP_EOL; 
+        $data_to_write .= '   Schema::dropIfExists(\'users\');'.PHP_EOL;
+        $data_to_write .= ' }'.PHP_EOL;   
+        $data_to_write .= '};';     
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);
 
         $file_handle = fopen(base_path()."\app\Models\\User.php", 'w');
         $data_to_write = '<?php'.PHP_EOL;
@@ -81,6 +113,7 @@ class AuthCrud extends Command
         $data_to_write .= '    */'.PHP_EOL;
         $data_to_write .= '    protected $fillable = ['.PHP_EOL;
         $data_to_write .= "      'name',".PHP_EOL;
+        $data_to_write .= "      'username',".PHP_EOL;
         $data_to_write .= "      'email',".PHP_EOL;
         $data_to_write .= "      'password',".PHP_EOL;
         $data_to_write .= '    ];'.PHP_EOL.PHP_EOL; 
@@ -211,6 +244,7 @@ class AuthCrud extends Command
         $data_to_write .= "  {".PHP_EOL;
         $data_to_write .= '     $this->validate($request, ['.PHP_EOL;
         $data_to_write .= "            'name' => 'required',".PHP_EOL;
+        $data_to_write .= "            'username' => 'required',".PHP_EOL;
         $data_to_write .= "            'email' => 'required|email|unique:users,email',".PHP_EOL;
         $data_to_write .= "            'password' => 'required|same:confirm-password',".PHP_EOL;
         $data_to_write .= "            'roles' => 'required'".PHP_EOL;
@@ -238,6 +272,7 @@ class AuthCrud extends Command
         $data_to_write .= ' {'.PHP_EOL;
         $data_to_write .= '     $this->validate($request, ['.PHP_EOL;
         $data_to_write .= "             'name' => 'required',".PHP_EOL;
+        $data_to_write .= "             'username' => 'required',".PHP_EOL;
         $data_to_write .= '             \'email\' => \'required|email|unique:users,email,\'.$id,'.PHP_EOL;
         $data_to_write .= "             'password' => 'same:confirm-password',".PHP_EOL;
         $data_to_write .= "             'roles' => 'required'".PHP_EOL;
@@ -299,8 +334,7 @@ class AuthCrud extends Command
         $data_to_write .= '    }'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '        // Create admin User and assign the role to him.'.PHP_EOL;
         $data_to_write .= '        $user = User::create(['.PHP_EOL;  
-        
-        $data_to_write .= "            'name' => '$userAdmin',".PHP_EOL;
+        $data_to_write .= "            'username' => '$userAdmin',".PHP_EOL;
         $data_to_write .= "            'email' => '$emailAdmin',".PHP_EOL;
         $data_to_write .= "            'password' => Hash::make('$passwordAdmin')".PHP_EOL;
         $data_to_write .= "        ]);".PHP_EOL.PHP_EOL; 
@@ -315,7 +349,11 @@ class AuthCrud extends Command
         /***************************************************************************/
         /************************* BLADE **************************************/
         /**************BLADE MASTER************************************/
-        $file_handle = fopen(base_path()."\resources\views\layouts\\master.blade.php", 'w');
+        $ruta_views =  base_path()."\\resources\\views\\layouts\\";
+        if (!file_exists($ruta_views)) {
+            mkdir($ruta_views, 0700); //creando directorio para las vistas
+        }
+        $file_handle = fopen(base_path()."\\resources\\views\\layouts\\master.blade.php", 'w');
         $data_to_write = '<!DOCTYPE html>'.PHP_EOL;
         $data_to_write .= '<html lang="{{ app()->getLocale() }}">'.PHP_EOL;
         $data_to_write .= '<head>'.PHP_EOL;
@@ -377,7 +415,11 @@ class AuthCrud extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /****************USERS************************/
-        $file_handle = fopen(base_path()."\resources\views\users\\index.blade.php", 'w'); 
+        $ruta_views =  base_path()."\\resources\\views\\users\\";
+        if (!file_exists($ruta_views)) {
+            mkdir($ruta_views, 0700); //creando directorio para las vistas
+        }
+        $file_handle = fopen(base_path()."\\resources\\views\\users\\index.blade.php", 'w'); 
         $data_to_write = '@section(\'content\')'.PHP_EOL;
         $data_to_write .= '<div class="row">'.PHP_EOL;
         $data_to_write .= ' <div class="col-lg-12 margin-tb mb-4">'.PHP_EOL;
@@ -425,7 +467,7 @@ class AuthCrud extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /******************create******* */
-        $file_handle = fopen(base_path()."\resources\views\users\\create.blade.php", 'w'); 
+        $file_handle = fopen(base_path()."\\resources\\views\users\\create.blade.php", 'w'); 
         $data_to_write = '@extends(\'layouts.master\')'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '@section(\'content\')'.PHP_EOL;
         $data_to_write .= '    <div class="row">'.PHP_EOL;
@@ -495,7 +537,7 @@ class AuthCrud extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /**************show********* */
-        $file_handle = fopen(base_path()."\resources\views\users\\show.blade.php", 'w'); 
+        $file_handle = fopen(base_path()."\\resources\\views\\users\\show.blade.php", 'w'); 
         $data_to_write = '@extends(\'layouts.master\') '.PHP_EOL.PHP_EOL; 
         $data_to_write .= '@section(\'content\')'.PHP_EOL;
         $data_to_write .= '<div class="row">'.PHP_EOL;
@@ -536,7 +578,7 @@ class AuthCrud extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /**********edit********** */
-        $file_handle = fopen(base_path()."\resources\views\users\\edit.blade.php", 'w');  
+        $file_handle = fopen(base_path()."\\resources\\views\\users\\edit.blade.php", 'w');  
         $data_to_write = '@extends(\'layouts.master\') '.PHP_EOL.PHP_EOL; 
         $data_to_write .= '@section(\'content\')'.PHP_EOL;
         $data_to_write .= '    <div class="row">'.PHP_EOL;
@@ -610,7 +652,11 @@ class AuthCrud extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /******************************BLADE ROLE***************************************************/
-        $file_handle = fopen(base_path()."\resources\views\roles\\index.blade.php", 'w');  
+        $ruta_views =  base_path()."\\resources\\views\\roles\\";
+        if (!file_exists($ruta_views)) {
+            mkdir($ruta_views, 0700); //creando directorio para las vistas
+        }
+        $file_handle = fopen(base_path()."\\resources\\views\\roles\\index.blade.php", 'w');  
         $data_to_write = '@extends(\'layouts.master\')'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '@section(\'content\')'.PHP_EOL;
         $data_to_write .= '    <div class="row">'.PHP_EOL;
@@ -660,7 +706,7 @@ class AuthCrud extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /*******show roles******* */
-        $file_handle = fopen(base_path()."\resources\views\roles\\show.blade.php", 'w');  
+        $file_handle = fopen(base_path()."\\resources\\views\\roles\\show.blade.php", 'w');  
         $data_to_write = '@extends(\'layouts.master\')'.PHP_EOL.PHP_EOL;
         $data_to_write .= '@section(\'content\')'.PHP_EOL;
         $data_to_write .= '    <div class="row">'.PHP_EOL;
@@ -696,7 +742,7 @@ class AuthCrud extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /************create*********** */
-        $file_handle = fopen(base_path()."\resources\views\roles\\create.blade.php", 'w');  
+        $file_handle = fopen(base_path()."\\resources\\views\\roles\\create.blade.php", 'w');  
         $data_to_write .= '@extends(\'layouts.master\')'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '@section(\'content\')'.PHP_EOL;
         $data_to_write .= '    <div class="row">'.PHP_EOL;
@@ -750,7 +796,7 @@ class AuthCrud extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /***********edit****************/
-        $file_handle = fopen(base_path()."\resources\views\roles\\create.blade.php", 'w');  
+        $file_handle = fopen(base_path()."\\resources\\views\\roles\\create.blade.php", 'w');  
         $data_to_write = 'extends(\'layouts.master\')'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '@section(\'content\')'.PHP_EOL;
         $data_to_write .= '    <div class="row">'.PHP_EOL;
@@ -806,7 +852,7 @@ class AuthCrud extends Command
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
         /***********************ROUTES********************************************************************/
-        $file_handle = fopen(base_path()."\routes\\auth_users.php", 'w'); 
+        $file_handle = fopen(base_path()."\\routes\\auth_users.php", 'w'); 
         $data_to_write = 'Route::get(\'/dashboard\', function () {'.PHP_EOL;
         $data_to_write .= '    return view(\'dashboard\');'.PHP_EOL;
         $data_to_write .= '})->middleware([\'auth\', \'verified\'])->name(\'dashboard\');'.PHP_EOL.PHP_EOL;
@@ -821,5 +867,41 @@ class AuthCrud extends Command
         $data_to_write .= '});'.PHP_EOL;
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
+        /************************* AÑADIR RUTA ************************************************************/ 
+        $data_route = 'require __DIR__'.".'\\auth_users.php';";
+        $file_route = base_path()."\\routes\\web.php";
+
+        if( strpos(file_get_contents($file_route),$data_route) !== false) {
+            file_put_contents($file_route, str_replace($data_route , $data_route, file_get_contents($file_route)));
+        }else {
+            file_put_contents($file_route,file_get_contents($file_route).PHP_EOL.PHP_EOL.$data_route);
+        }
+        /*************************************************************************************************/
+        $file_handle = fopen(base_path()."\\database\\seeders\\RoleSeeder.php", 'w'); 
+        $data_to_write = '<?php'.PHP_EOL.PHP_EOL; 
+        $data_to_write .= 'namespace Database\Seeders;'.PHP_EOL;  
+        $data_to_write .= '// use Illuminate\Database\Console\Seeds\WithoutModelEvents;'.PHP_EOL;
+        $data_to_write .= 'use Illuminate\Database\Seeder;'.PHP_EOL.PHP_EOL; 
+        $data_to_write .= 'class DatabaseSeeder extends Seeder'.PHP_EOL;
+        $data_to_write .= '{'.PHP_EOL;
+        $data_to_write .= '    /**'.PHP_EOL;
+        $data_to_write .= '     * Seed the application\'s database.'.PHP_EOL;
+        $data_to_write .= '     */'.PHP_EOL;
+        $data_to_write .= '    public function run(): void'.PHP_EOL;
+        $data_to_write .= '    {'.PHP_EOL;
+        $data_to_write .= '        $this->call(['.PHP_EOL;
+        $data_to_write .= '              RoleSeeder::class'.PHP_EOL;
+        $data_to_write .= '        ]);'.PHP_EOL;
+        $data_to_write .= '    }'.PHP_EOL;
+        $data_to_write .= '}';
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);
+        /*********************** construir sql ***********************************/
+        $result = Process::run('php artisan route:cache');
+        $result = Process::run('php artisan cache:clear');
+        $result = Process::run('php artisan migrate:fresh --seed');
+        /*************************************************************************/
+        echo 'Autenticaciòn del sistema construido con éxito!!! (Rutas, Solicitud,Controller, Model.)';
+        
     }
 }
