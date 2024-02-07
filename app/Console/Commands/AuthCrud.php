@@ -334,7 +334,8 @@ class AuthCrud extends Command
         $data_to_write .= '            Permission::create([\'name\' => $permission]);'.PHP_EOL;
         $data_to_write .= '    }'.PHP_EOL.PHP_EOL; 
         $data_to_write .= '        // Create admin User and assign the role to him.'.PHP_EOL;
-        $data_to_write .= '        $user = User::create(['.PHP_EOL;  
+        $data_to_write .= '        $user = User::create(['.PHP_EOL; 
+        $data_to_write .= "            'name' => '$userAdmin',".PHP_EOL; 
         $data_to_write .= "            'username' => '$userAdmin',".PHP_EOL;
         $data_to_write .= "            'email' => '$emailAdmin',".PHP_EOL;
         $data_to_write .= "            'password' => Hash::make('$passwordAdmin')".PHP_EOL;
