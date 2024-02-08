@@ -6,26 +6,26 @@
 
  class CategoryController extends Controller
  {
-  private $meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Setiembre','Octubre','Noviembre','Diciembre'];
-  public function index()
-  {
-    return view('modules.categories.index');
-  }
-  public function list()
-  {
-    $category = category::latest()->paginate(10);
-    return view('modules.categories.list', compact('category'));
-  }
-  public function create()
-  {
+   private $meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Setiembre','Octubre','Noviembre','Diciembre'];
+   public function index()
+   {
+     return view('modules.categories.index');
+   }
+   public function list()
+   {
+     $category = category::latest()->paginate(10);
+     return view('modules.categories.list', compact('category'));
+   }
+   public function create()
+   {
      $category = new category();
      $list_category = category::latest()->paginate(10);
      $list_parent_id = $category->list_parent_id();
      $list_user_id = $category->list_user_id();
      return view('modules.categories.create', compact('list_category','list_parent_id','list_user_id'));
-  }
-  public function store(CategoryRequest $request)
-  {
+   }
+   public function store(CategoryRequest $request)
+   {
      \DB::beginTransaction();
      try {
           category::create($request->validated());
@@ -40,21 +40,21 @@
      }
 
      return redirect()->route('categories.list')->with('message', 'category Created Successfully');
-  }
-  public function show($id)
-  {
+   }
+   public function show($id)
+   {
      $category = category::find($id);
      return view('modules.categories.show', compact('category'));
-  }
-  public function edit($id)
-  {
+   }
+   public function edit($id)
+   {
      $category = category::find($id);
      $parent_id = $category->list_parent_id();
      $user_id = $category->list_user_id();
      return view('modules.categories.edit', compact('category','parent_id','user_id'));
-  }
-  public function update(CategoryRequest $request,category $category)
-  {
+   }
+   public function update(CategoryRequest $request,category $category)
+   {
     \DB::beginTransaction();
      try {
            $category->update([
@@ -75,9 +75,9 @@
          throw $e;
      }
      return redirect()->route('categories.list')->with('message', 'category updated Successfully');
-  }
-  public function destroy($id)
-  {
+   }
+   public function destroy($id)
+   {
      \DB::beginTransaction();
      try {
           \DB::commit();
@@ -91,9 +91,9 @@
          throw $e;
      }
      return redirect()->route('categories.list')->with('message', 'category Deleted Successfully');
-  }
-  public function search(Request $request)
-  {
+   }
+   public function search(Request $request)
+   {
      $origin = "search";
      $search = $request->input('search');
 
@@ -107,9 +107,9 @@
                        })
                        ->paginate(10);
      return view('modules.categories.list', compact('origin', 'search','resultsSearch'));
-  }
-  public function categoryYearRegister($year = '')
-  {
+   }
+   public function categoryYearRegister($year = '')
+   {
      $year = $year == '' ? date('Y') : $year;
      $result = category::select(\DB::raw("COUNT(*) as count"), \DB::raw("MONTH(created_at) as month_name"))
      ->whereYear('created_at', $year)
@@ -123,9 +123,9 @@
      $data = $result->values();
      $label = 'Cantidad de registros del año '.$year;
      return view('modules.categories.date_year_register', compact('label','labels','data'));
-  }
-  public function categoryMonthRegister($year = '',$mes = '')
-  {
+   }
+   public function categoryMonthRegister($year = '',$mes = '')
+   {
      $year = $year == '' ? date('Y') : $year;
      $mes = $mes == '' ? date('m') : $mes;
      $result = category::whereYear('created_at', $year)
@@ -134,9 +134,9 @@
      $labels = $result->keys();
      $data = $result->values();
      return view('modules.categories.index', compact('labels','data'));
-  }
-  public function categoryBetweenMonthRegister($year = '',$f_mes = '',$l_mes= '')
-  {
+   }
+   public function categoryBetweenMonthRegister($year = '',$f_mes = '',$l_mes= '')
+   {
      $year = $year == '' ? date('Y') : $year;
      $f_mes = $f_mes == '' ? date('m') : $f_mes;
      $l_mes = $l_mes == '' ? date('m') : $l_mes;
@@ -147,5 +147,5 @@
      $labels = $result->keys();
      $data = $result->values();
      return view('modules.categories.index', compact('labels','data'));
-  }
+   }
 }
