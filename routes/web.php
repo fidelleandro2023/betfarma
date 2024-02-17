@@ -32,3 +32,6 @@ require __DIR__.'\modules\categories.php';
  
 
 require __DIR__.'\auth_users.php';
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
