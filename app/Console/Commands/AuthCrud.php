@@ -1013,6 +1013,8 @@ class AuthCrud extends Command
         $data_to_write .= '</body>'.PHP_EOL;
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);
+        //https://www.cursosdesarrolloweb.es/blog/adminlte-laravel
+        //https://adminlte.io/docs/3.2/layout.html
         /***********************************************************************************/ 
         $file_handle = fopen(base_path()."\\resources\\views\\DatabaseSeeder.php", 'w'); 
         $data_to_write = '<nav class="main-header navbar navbar-expand navbar-white navbar-light">'.PHP_EOL;
