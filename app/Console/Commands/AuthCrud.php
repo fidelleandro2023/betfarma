@@ -3,9 +3,14 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command; 
 use Illuminate\Support\Facades\Process;
 
+
+// sessionRepository.save(session);
+
+// return Result.success(session);
+
 class AuthCrud extends Command
 {
-    /**
+    /**  
      * The name and signature of the console command.
      *
      * @var string
@@ -37,6 +42,7 @@ class AuthCrud extends Command
         $pattern = "/^.*$pattern.*\$/m";
         if (!preg_match_all($pattern, $contents, $matches))
         {
+            Process::run('npm install');
             Process::run('composer update spatie/laravel-permission');
             $file = base_path()."\app\Http\.json";
             header('Content-Type: text/plain');
