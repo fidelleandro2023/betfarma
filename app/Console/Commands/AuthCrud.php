@@ -980,6 +980,37 @@ class AuthCrud extends Command
         $result = Process::run('composer require jeroennoten/laravel-adminlte');
         $result = Process::run('php artisan adminlte:install');
         $result = Process::run('php artisan adminlte:install --only=main_views');
+        /**************CONSTRUIR CONTROLLERS************************************************/
+        $ruta_cc =  base_path()."\\app\\Http\\Controllers\\AdminLte";
+        if (!file_exists($ruta_cc)) {
+            mkdir($ruta_cc, 0700); //creando directorio para las vistas
+        }
+        $file_handle = fopen(base_path()."\\app\\Http\\Controllers\\AdminLte\\SearchLteController.php", 'w'); 
+        $data_to_write = '<?php'.PHP_EOL.PHP_EOL; 
+        $data_to_write .= 'namespace App\Http\Controllers\AdminLte;'.PHP_EOL;  
+        $data_to_write .= 'use Illuminate\Http\Request;'.PHP_EOL;
+        $data_to_write .= 'use Illuminate\Support\Facades\Log;'.PHP_EOL.PHP_EOL; 
+        $data_to_write .= 'class SearchLteController extends Controller'.PHP_EOL;
+        $data_to_write .= '{'.PHP_EOL;
+        $data_to_write .= '    /**'.PHP_EOL;
+        $data_to_write .= '     * Show the navbar search results..'.PHP_EOL;
+        $data_to_write .= '     */'.PHP_EOL;
+        $data_to_write .= '    public function showNavbarSearchResults(Request $request)'.PHP_EOL;
+        $data_to_write .= '    {'.PHP_EOL;
+        $data_to_write .= '       // Check that the search keyword is present.'.PHP_EOL;
+        $data_to_write .= '       if (! $request->filled(\'searchVal\')) {'.PHP_EOL;
+        $data_to_write .= '         return back();'.PHP_EOL;
+        $data_to_write .= '       }'.PHP_EOL; 
+        $data_to_write .= '      // Get the search keyword.'.PHP_EOL;  
+        $data_to_write .= '      $keyword = $request->input(\'searchVal\');'.PHP_EOL; 
+        $data_to_write .= '      Log::info("A navbar search was triggered with next keyword => {$keyword}");'.PHP_EOL; 
+        $data_to_write .= '      // TODO: Create the search logic and return adequate response (maybe a view'.PHP_EOL; 
+        $data_to_write .= '      // with the results).'.PHP_EOL; 
+        $data_to_write .= '      // ...'.PHP_EOL; 
+        $data_to_write .= '    }'.PHP_EOL;
+        $data_to_write .= '}';
+        fwrite($file_handle, $data_to_write);
+        fclose($file_handle);
         /*********************** construir sql ***********************************************/
         $result = Process::run('php artisan route:cache');
         $result = Process::run('php artisan cache:clear');
