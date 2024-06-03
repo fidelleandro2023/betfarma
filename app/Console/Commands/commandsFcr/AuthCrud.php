@@ -1,5 +1,5 @@
 <?php
-namespace App\Console\Commands;
+namespace App\Console\Commands\commandsFcr;
 use Illuminate\Console\Command; 
 use Illuminate\Support\Facades\Process;
 
@@ -44,16 +44,16 @@ class AuthCrud extends Command
         {
             Process::run('npm install');
             Process::run('composer update spatie/laravel-permission');
-            $file = base_path()."\app\Http\.json";
-            header('Content-Type: text/plain');
-            $contents = file_get_contents($file);
-            $searchfor = 'spatie/laravel-permission';
-            $pattern = preg_quote($searchfor, '/');
-            $pattern = "/^.*$pattern.*\$/m";
-            if (!preg_match_all($pattern, $contents, $matches))
-            {
+            // $file = base_path()."\app\Http\.json";
+            // header('Content-Type: text/plain');
+            // $contents = file_get_contents($file);
+            // $searchfor = 'spatie/laravel-permission';
+            // $pattern = preg_quote($searchfor, '/');
+            // $pattern = "/^.*$pattern.*\$/m";
+            // if (!preg_match_all($pattern, $contents, $matches))
+            // {
 
-            }
+            // }
         } 
         $searchfor = 'laravel/breeze';
         $pattern = preg_quote($searchfor, '/');
@@ -64,6 +64,7 @@ class AuthCrud extends Command
             Process::run('php artisan breeze:install');
              /**************** PUBLICAR EN EL VENDOR ****************************/
             Process::run('php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"');
+            Process::run('php artisan migrate');
             /**************************************************************************** */
         }  
         /*****************KERNEL*************************/
@@ -155,7 +156,8 @@ class AuthCrud extends Command
         $data_to_write .= '       $table->id();'.PHP_EOL;   
         $data_to_write .= '       $table->string(\'name\')->nullable();'.PHP_EOL;       
         $data_to_write .= '       $table->string(\'username\')->unique();'.PHP_EOL; 
-        $data_to_write .= '       $table->string(\'email\')->unique();'.PHP_EOL;    
+        $data_to_write .= '       $table->string(\'email\')->unique();'.PHP_EOL; 
+        $data_to_write .= '       $table->string(\'profile_photo_url\')->nullable();'.PHP_EOL;  
         $data_to_write .= '       $table->timestamp(\'email_verified_at\')->nullable();'.PHP_EOL;   
         $data_to_write .= '       $table->string(\'password\');'.PHP_EOL;  
         $data_to_write .= '       $table->rememberToken();'.PHP_EOL;
@@ -215,6 +217,19 @@ class AuthCrud extends Command
         $data_to_write .= "    'email_verified_at' => 'datetime',".PHP_EOL;
         $data_to_write .= "    'password' => 'hashed',".PHP_EOL;
         $data_to_write .= '  ];'.PHP_EOL;
+        $data_to_write .= '  public static function adminlte_image()'.PHP_EOL;
+        $data_to_write .= '  {'.PHP_EOL;
+        $data_to_write .= '    $base = \'storage/images/\';'.PHP_EOL;
+        $data_to_write .= '    return auth()->user()->profile_photo_url == null ? \'https://picsum.photos/300/300\' : $base.auth()->user()->profile_photo_url;'.PHP_EOL;
+        $data_to_write .= '  }'.PHP_EOL;
+        $data_to_write .= '  public static function adminlte_desc()'.PHP_EOL;
+        $data_to_write .= '  {'.PHP_EOL;
+        $data_to_write .= '    return auth()->user()->username == null ? \'\' : auth()->user()->username;'.PHP_EOL;
+        $data_to_write .= '  }'.PHP_EOL;
+        $data_to_write .= '  public static function adminlte_profile_url()'.PHP_EOL;
+        $data_to_write .= '  {'.PHP_EOL;
+        $data_to_write .= '    return \'dashboard/profile\';'.PHP_EOL;
+        $data_to_write .= '  }'.PHP_EOL;
         $data_to_write .= '}'.PHP_EOL;
         fwrite($file_handle, $data_to_write);
         fclose($file_handle);

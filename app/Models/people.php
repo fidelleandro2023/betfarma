@@ -11,4 +11,6 @@
 
      protected $fillable = [
        'name','lastname','address','landline','birthdate,gender','main_phone','secondary_phone','document_types_id','document_number','status'     ];
+
+      
  }

@@ -41,4 +41,17 @@ class User extends Authenticatable
     'email_verified_at' => 'datetime',
     'password' => 'hashed',
   ];
+  public static function adminlte_image()
+  {
+      $base = 'storage/images/';
+      return auth()->user()->profile_photo_url == null ? 'https://picsum.photos/300/300' : $base.auth()->user()->profile_photo_url;
+  }
+  public static function adminlte_desc()
+  {
+      return auth()->user()->username == null ? '' : auth()->user()->username;
+  }
+  public static function adminlte_profile_url()
+  {
+      return 'dashboard/profile';
+  }
 }

@@ -67,8 +67,8 @@ class crudFidel extends Command
             echo 'No existe la migración'; exit;
         }*/
         /************* CREANDO USER AND ROLES STATIC****************/
-        $AuthCrud = new AuthCrudFidel();
-        $AuthCrud->generateAuthBase();
+        // $AuthCrud = new AuthCrudFidel();
+        // $AuthCrud->generateAuthBase();
         
         /************************************************************* */
         /*************** CREANDO MIGRACIONES PARA ROLES, USERS, PERMISOS, PEOPLE, TYPE_DOC **************************************/
@@ -988,7 +988,7 @@ class crudFidel extends Command
         }
         $data_to_write .= "     return view('".$prefijo.".".$tableName.".create', compact('list_".$model."'$compact));".PHP_EOL;
         $data_to_write .= '  }'.PHP_EOL; 
-        /*******************Método store ******************************************************************/
+        /******************* Método store ******************************************************************/
         $data_to_write .= '  public function store('.ucfirst($model).'Request $request)'.PHP_EOL;
         $data_to_write .= '  {'.PHP_EOL;
         $data_to_write .= '     \DB::beginTransaction();'.PHP_EOL;
@@ -1185,7 +1185,6 @@ class crudFidel extends Command
                                 default: $data_to_write .= ' NULL';break;
                             } 
                     }  
-                    
                 }
             } 
             $data_to_write .= PHP_EOL.'                   ]';   
