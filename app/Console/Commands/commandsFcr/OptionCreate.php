@@ -133,13 +133,31 @@ class OptionCreate extends Command
         }
         
         //print_r($matches); exit;
-        
-        foreach ($matches as $kmat => $items) {
-            if (isset($items['references'])) {
-                foreach ($items['references'] as $key => $reference) {
-                    $matches[$reference]['belows'][] = $kmat;
-                }
-            }
+        $matches2 = $matches;
+        $matches3 = array();
+        foreach ($matches as $kmat1 => $value) {
+            foreach ($matches2 as $kmat2 => $items) {
+                if ($kmat1 != $kmat2) {    
+                    if (isset($items['references'])) {
+                        if (is_array($items['references'])) { 
+                            foreach ($items['references'] as $key => $reference) {
+                                //echo $reference .'=='. $kmat.' ';
+                                if ($reference == $kmat1) {
+                                    $matches3[$reference]['belows'][] = $kmat2;
+                                } 
+                            }
+                        }
+                        else {  
+                            if ($reference == $kmat) {
+                                $matches3[$kmat1]['belows'][] = $kmat2;
+                            } 
+                        }
+                    }
+                } 
+            } 
+        }
+        foreach ($matches3 as $key => $value) {
+            $matches[$key]['belows'] = $matches3[$key]['belows'];
         }
         print_r($matches); exit;
         /*************Creando migraciones****************************************************************/
